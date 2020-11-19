@@ -114,7 +114,6 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 const FILMS_CARDS_NUMBER = 5;
 const FILMS_TOP_RAITED_CARDS_NUMBER = 2;
 const FILMS_MOST_COMMENTED_CARDS_NUMBER = 2;
