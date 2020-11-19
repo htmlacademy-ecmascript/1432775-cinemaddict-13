@@ -8,7 +8,6 @@ import {createShowMoreButton} from './view/show-more-button';
 import {createTopRaitedContainer} from './view/top-raited-container';
 import {createMostCommentedContainer} from './view/most-commented-container';
 
-
 const FILMS_CARDS_NUMBER = 5;
 const FILMS_TOP_RAITED_CARDS_NUMBER = 2;
 const FILMS_MOST_COMMENTED_CARDS_NUMBER = 2;
