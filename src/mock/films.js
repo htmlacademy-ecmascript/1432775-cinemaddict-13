@@ -1,14 +1,10 @@
+import {getRandomInteger} from '../util.js';
+import {EMOTIONS} from '../const.js';
+
 const MAX_DESCRIPTION_SENTENCES = 5;
 const MAX_COMMENTS = 5;
 
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-const films = [
+const FILMS = [
   {poster: `./images/posters/made-for-each-other.png`,
     title: `Made for Each Other`},
   {poster: `./images/posters/popeye-meets-sinbad.png`,
@@ -25,7 +21,7 @@ const films = [
     title: `The Man with the Golden Arm`}
 ];
 
-const descriptions = [
+const DESCRIPTIONS = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget.`,
   `Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra.`,
   `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.`,
@@ -37,12 +33,42 @@ const descriptions = [
   `In rutrum ac purus sit amet tempus.`
 ];
 
-// const genres = [`comedy`, `drama`, `romantic`, `classic`];
+const DIRECTORS = [
+  `Anthony Mann`,
+  `Nick Go`,
+  `Tim Top`,
+  `Anna Svetlova`,
+  `Kate White`
+];
+
+const WRITERS = [
+  `Anne Wigton`,
+  `Heinz Herald`,
+  `Richard Weil`,
+  `Wigton Heinz`,
+  `Weil Wigton`,
+];
+
+const ACTORS = [
+  `Erich von Stroheim`,
+  `Mary Beth Hughes`,
+  `Dan Duryea`,
+  `Stroheim Dan`,
+  `Beth Erich`,
+  `Anna Mann`,
+  `Anthony Richard`,
+];
+
+const GENRES = [`comedy`, `drama`, `romantic`, `classic`, `cartoon`, `thriller`];
+
+const COUNTRIES = [`USA`, `UK`, `USSR`, `Germany`, `France`];
+
+const AGES = [`12`, `16`, `18`];
 
 const generateDescription = () => {
   let description = [];
   for (let i = 0; i < MAX_DESCRIPTION_SENTENCES; i++) {
-    description.push(descriptions[getRandomInteger(0, descriptions.length - 1)]);
+    description.push(DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)]);
   }
   return description.join(` `);
 };
@@ -59,46 +85,43 @@ const generateDuration = () => {
 };
 
 const generateComments = () => {
-  const names = [`Ann`, `Greg`, `Igor`, `Kate`];
-
-  const emotions = [
-    `smile`,
-    `sleeping`,
-    `puke`,
-    `angry`
-  ];
+  const NAMES = [`Ann`, `Greg`, `Igor`, `Kate`];
 
   const createNewComment = () => {
     return {
-      text: descriptions[getRandomInteger(0, descriptions.length - 1)],
-      emotion: emotions[getRandomInteger(0, emotions.length - 1)],
-      author: names[getRandomInteger(0, names.length - 1)],
-      date: `${getRandomInteger(2005, 2020)}/${getRandomInteger(1, 12)}/${getRandomInteger(1, 31)} ${getRandomInteger(0, 23)}:${getRandomInteger(0, 59)}`
+      text: DESCRIPTIONS[getRandomInteger(0, DESCRIPTIONS.length - 1)],
+      emotion: EMOTIONS[getRandomInteger(0, EMOTIONS.length - 1)],
+      author: NAMES[getRandomInteger(0, NAMES.length - 1)],
+      date: new Date(`${getRandomInteger(2005, 2020)} ${getRandomInteger(0, 11)} ${getRandomInteger(1, 31)} ${getRandomInteger(1, 23)}:${getRandomInteger(1, 59)}`)
     };
   };
 
   return new Array(getRandomInteger(0, MAX_COMMENTS)).fill().map(createNewComment);
 };
 
-const generateGeners = () => {
-  const genres = [`comedy`, `drama`, `romantic`, `classic`];
-  let filmGenres = [];
-  for (let i = 0; i < getRandomInteger(1, genres.length - 1); i++) {
-    filmGenres.push(genres[getRandomInteger(0, genres.length - 1)]);
+const generateRandomSet = (array) => {
+  let newArr = [];
+  for (let i = 0; i < getRandomInteger(1, array.length - 1); i++) {
+    newArr.push(array[getRandomInteger(0, array.length - 1)]);
   }
-  return Array.from(new Set(filmGenres));
+  return Array.from(new Set(newArr));
 };
 
 export const createMockFilm = () => {
-  const filmIndex = getRandomInteger(0, films.length - 1);
+  const filmIndex = getRandomInteger(0, FILMS.length - 1);
   return {
-    poster: films[filmIndex].poster,
-    title: films[filmIndex].title,
+    poster: FILMS[filmIndex].poster,
+    title: FILMS[filmIndex].title,
     raiting: getRandomInteger(1, 10),
-    year: getRandomInteger(1935, 2000),
+    date: new Date(`${getRandomInteger(1935, 2020)},${getRandomInteger(1, 12)},${getRandomInteger(1, 31)}`),
     duration: generateDuration(),
-    genre: generateGeners(),
+    genre: generateRandomSet(GENRES),
     description: generateDescription(),
-    comments: generateComments()
+    comments: generateComments(),
+    director: DIRECTORS[getRandomInteger(0, DIRECTORS.length - 1)],
+    writers: generateRandomSet(WRITERS),
+    actors: generateRandomSet(ACTORS),
+    country: COUNTRIES[getRandomInteger(0, COUNTRIES.length - 1)],
+    age: AGES[getRandomInteger(0, AGES.length - 1)]
   };
 };
