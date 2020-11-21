@@ -1,4 +1,5 @@
 const MAX_DESCRIPTION_SENTENCES = 5;
+const MAX_COMMENTS = 5;
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -36,6 +37,8 @@ const descriptions = [
   `In rutrum ac purus sit amet tempus.`
 ];
 
+// const genres = [`comedy`, `drama`, `romantic`, `classic`];
+
 const generateDescription = () => {
   let description = [];
   for (let i = 0; i < MAX_DESCRIPTION_SENTENCES; i++) {
@@ -55,6 +58,37 @@ const generateDuration = () => {
   }
 };
 
+const generateComments = () => {
+  const names = [`Ann`, `Greg`, `Igor`, `Kate`];
+
+  const emotions = [
+    `smile`,
+    `sleeping`,
+    `puke`,
+    `angry`
+  ];
+
+  const createNewComment = () => {
+    return {
+      text: descriptions[getRandomInteger(0, descriptions.length - 1)],
+      emotion: emotions[getRandomInteger(0, emotions.length - 1)],
+      author: names[getRandomInteger(0, names.length - 1)],
+      date: `${getRandomInteger(2005, 2020)}/${getRandomInteger(1, 12)}/${getRandomInteger(1, 31)} ${getRandomInteger(0, 23)}:${getRandomInteger(0, 59)}`
+    };
+  };
+
+  return new Array(getRandomInteger(0, MAX_COMMENTS)).fill().map(createNewComment);
+};
+
+const generateGeners = () => {
+  const genres = [`comedy`, `drama`, `romantic`, `classic`];
+  let filmGenres = [];
+  for (let i = 0; i < getRandomInteger(1, genres.length - 1); i++) {
+    filmGenres.push(genres[getRandomInteger(0, genres.length - 1)]);
+  }
+  return Array.from(new Set(filmGenres));
+};
+
 export const createMockFilm = () => {
   const filmIndex = getRandomInteger(0, films.length - 1);
   return {
@@ -63,8 +97,8 @@ export const createMockFilm = () => {
     raiting: getRandomInteger(1, 10),
     year: getRandomInteger(1935, 2000),
     duration: generateDuration(),
-    genre: 0,
+    genre: generateGeners(),
     description: generateDescription(),
-    comments: 0
+    comments: generateComments()
   };
 };
