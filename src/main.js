@@ -7,6 +7,9 @@ import {createFilmsCatalog} from './view/films-catalog';
 import {createShowMoreButton} from './view/show-more-button';
 import {createTopRaitedContainer} from './view/top-raited-container';
 import {createMostCommentedContainer} from './view/most-commented-container';
+import {createMockFilm} from './mock/films';
+
+console.log(createMockFilm());
 
 const FILMS_CARDS_NUMBER = 5;
 const FILMS_TOP_RAITED_CARDS_NUMBER = 2;
