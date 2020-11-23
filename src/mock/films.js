@@ -78,11 +78,7 @@ const generateDuration = () => {
   const duration = getRandomInteger(30, 240);
   const hours = duration / 60;
   const minutes = duration % 60;
-  if (hours < 1) {
-    return `${minutes}m`;
-  } else {
-    return `${Math.floor(hours)}h ${minutes}m`;
-  }
+  return hours < 1 ? `${minutes}m` : `${Math.floor(hours)}h ${minutes}m`;
 };
 
 const generateComments = () => {
@@ -113,6 +109,7 @@ export const createMockFilm = () => {
   return {
     poster: FILMS[filmIndex].poster,
     title: FILMS[filmIndex].title,
+    originalTitle: FILMS[getRandomInteger(0, FILMS.length - 1)].title,
     raiting: getRandomInteger(1, 10),
     date: new Date(`${getRandomInteger(1935, 2020)},${getRandomInteger(1, 12)},${getRandomInteger(1, 31)}`),
     duration: generateDuration(),

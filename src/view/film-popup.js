@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import {EMOTIONS} from '../const.js';
 
 export const createFilmPopup = (film) => {
-  const {title, raiting, date, duration, genre, poster, description, comments, director, writers, actors, country, age} = film;
+  const {title, originalTitle, raiting, date, duration, genre, poster, description, comments, director, writers, actors, country, age} = film;
 
   const genres = new Array(genre.length).fill().map((value, index) => {
     return `<span class="film-details__genre">${genre[index]}</span>`;
@@ -51,7 +51,7 @@ export const createFilmPopup = (film) => {
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
               <h3 class="film-details__title">${title}</h3>
-              <p class="film-details__title-original">Original: ${title}</p>
+              <p class="film-details__title-original">Original: ${originalTitle}</p>
             </div>
 
             <div class="film-details__rating">
