@@ -1,3 +1,3 @@
-export const createFilmsNumber = () => {
-  return `<p>130 291 movies inside</p>`;
+export const createFilmsNumber = (filmsNumber) => {
+  return `<p>${filmsNumber} movies inside</p>`;
 };

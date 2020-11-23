@@ -3,6 +3,7 @@ import {EMOTIONS} from '../const.js';
 
 const MAX_DESCRIPTION_SENTENCES = 5;
 const MAX_COMMENTS = 5;
+export const AVAILABLE_FILMS = `123 456`;
 
 const FILMS = [
   {poster: `./images/posters/made-for-each-other.png`,
