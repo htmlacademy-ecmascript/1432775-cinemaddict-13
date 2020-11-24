@@ -4,16 +4,16 @@ import {EMOTIONS} from '../const.js';
 export const createFilmPopup = (film) => {
   const {title, originalTitle, raiting, date, duration, genre, poster, description, comments, director, writers, actors, country, age} = film;
 
-  const genres = new Array(genre.length).fill().map((value, index) => {
+  const genres = genre.map((value, index) => {
     return `<span class="film-details__genre">${genre[index]}</span>`;
   }).join(``);
 
-  const filmComments = new Array(comments.length).fill().map((value, index) => {
+  const filmComments = comments.map((value, index) => {
     const {text, author, date: commentDate, emotion} = comments[index];
 
     return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+      <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
     </span>
     <div>
   <p class="film-details__comment-text">${text}</p>
@@ -26,7 +26,7 @@ export const createFilmPopup = (film) => {
   </li>`;
   }).join(``);
 
-  const emojiRadio = new Array(EMOTIONS.length).fill().map((value, index) => {
+  const emojiRadio = EMOTIONS.map((value, index) => {
     const emotion = EMOTIONS[index];
     return `<input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${emotion}" value="${emotion}">
     <label class="film-details__emoji-label" for="emoji-${emotion}">

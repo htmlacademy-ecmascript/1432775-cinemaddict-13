@@ -80,5 +80,5 @@ const siteFooter = document.querySelector(`.footer`);
 const footerStats = siteFooter.querySelector(`.footer__statistics`);
 render(footerStats, `beforeend`, createFilmsNumber(AVAILABLE_FILMS));
 
-const pageBody = document.querySelector(`.body`);
+const pageBody = document.querySelector(`body`);
 render(pageBody, `beforeend`, createFilmPopup(films[0]));
