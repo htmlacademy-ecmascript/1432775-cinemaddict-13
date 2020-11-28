@@ -21,7 +21,7 @@ const createFilmCard = (film) => {
 </article>`;
 };
 
-export default class SiteCatalog {
+export default class FilmCard {
   constructor(film) {
     this._element = null;
     this._film = film;
