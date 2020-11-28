@@ -1,8 +1,8 @@
-// import {createElement} from '../util.js';
+import {createElement} from '../util.js';
 import dayjs from "dayjs";
 import {EMOTIONS} from '../const.js';
 
-export const createFilmPopup = (film) => {
+const createFilmPopup = (film) => {
   const {title, originalTitle, raiting, date, duration, genre, poster, description, comments, director, writers, actors, country, age} = film;
 
   const genres = genre.map((value, index) => {
@@ -132,3 +132,25 @@ export const createFilmPopup = (film) => {
   </form>
 </section>`;
 };
+
+export default class FilmPopup {
+  constructor(film) {
+    this._element = null;
+    this._film = film;
+  }
+
+  getTemplate() {
+    return createFilmPopup(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

@@ -21,3 +21,9 @@ export const render = (container, element, place = `beforeend`) => {
       break;
   }
 };
+
+export const isKeyPressed = (evt, cb, keyName) => {
+  if (evt.key === keyName) {
+    cb();
+  }
+};
