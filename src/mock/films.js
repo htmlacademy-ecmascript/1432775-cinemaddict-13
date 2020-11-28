@@ -3,7 +3,6 @@ import {EMOTIONS} from '../const.js';
 
 const MAX_DESCRIPTION_SENTENCES = 5;
 const MAX_COMMENTS = 5;
-export const AVAILABLE_FILMS = `123 456`;
 
 const FILMS = [
   {poster: `./images/posters/made-for-each-other.png`,
@@ -104,22 +103,41 @@ const generateRandomSet = (array) => {
   return Array.from(new Set(newArr));
 };
 
-export const createMockFilm = () => {
-  const filmIndex = getRandomInteger(0, FILMS.length - 1);
-  return {
-    poster: FILMS[filmIndex].poster,
-    title: FILMS[filmIndex].title,
-    originalTitle: FILMS[getRandomInteger(0, FILMS.length - 1)].title,
-    raiting: getRandomInteger(1, 10),
-    date: new Date(`${getRandomInteger(1935, 2020)},${getRandomInteger(1, 12)},${getRandomInteger(1, 31)}`),
-    duration: generateDuration(),
-    genre: generateRandomSet(GENRES),
-    description: generateDescription(),
-    comments: generateComments(),
-    director: DIRECTORS[getRandomInteger(0, DIRECTORS.length - 1)],
-    writers: generateRandomSet(WRITERS),
-    actors: generateRandomSet(ACTORS),
-    country: COUNTRIES[getRandomInteger(0, COUNTRIES.length - 1)],
-    age: AGES[getRandomInteger(0, AGES.length - 1)]
-  };
-};
+export default class MockFilm {
+  constructor() {
+    this._filmIndex = getRandomInteger(0, FILMS.length - 1);
+    this._poster = FILMS[this._filmIndex].poster;
+    this._title = FILMS[this._filmIndex].title;
+    this._originalTitle = FILMS[getRandomInteger(0, FILMS.length - 1)].title;
+    this._raiting = getRandomInteger(1, 10);
+    this._date = new Date(`${getRandomInteger(1935, 2020)},${getRandomInteger(1, 12)},${getRandomInteger(1, 31)}`);
+    this._duration = generateDuration();
+    this._genre = generateRandomSet(GENRES);
+    this._description = generateDescription();
+    this._comments = generateComments();
+    this._director = DIRECTORS[getRandomInteger(0, DIRECTORS.length - 1)];
+    this._writers = generateRandomSet(WRITERS);
+    this._actors = generateRandomSet(ACTORS);
+    this._country = COUNTRIES[getRandomInteger(0, COUNTRIES.length - 1)];
+    this._age = AGES[getRandomInteger(0, AGES.length - 1)];
+  }
+
+  getNewFilm() {
+    return {
+      poster: this._poster,
+      title: this._title,
+      originalTitle: this._originalTitle,
+      raiting: this._raiting,
+      date: this._date,
+      duration: this._duration,
+      genre: this._genre,
+      description: this._description,
+      comments: this._comments,
+      director: this._director,
+      writers: this._writers,
+      actors: this._actors,
+      country: this._country,
+      age: this._age
+    };
+  }
+}
