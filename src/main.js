@@ -11,7 +11,7 @@ import UserMock from './mock/user';
 import {render} from './util.js';
 import {renderCard} from './render-card';
 
-const MOCK_FILMS = 1;
+const MOCK_FILMS = 15;
 const FILMS_CARDS_NUMBER = 5;
 const FILMS_STEP_LOAD = 5;
 const FILMS_TOP_RAITED_CARDS_NUMBER = 2;
@@ -74,15 +74,16 @@ const renderTheWholeCatalog = () => {
   const filmsSortedByRaiting = films.slice().sort((previous, current) => {
     return current.raiting - previous.raiting;
   });
-  for (let i = 0; i < FILMS_TOP_RAITED_CARDS_NUMBER; i++) {
+  for (let i = 0; i < Math.min(FILMS_TOP_RAITED_CARDS_NUMBER, filmsSortedByRaiting.length); i++) {
     renderCard(topRaitedFilmsContainer, filmsSortedByRaiting[i]);
   }
 
   const mostCommentedFilmsContainer = filmsContainer.querySelector(`.films-list--commented .films-list__container`);
-  for (let i = 0; i < FILMS_MOST_COMMENTED_CARDS_NUMBER; i++) {
-    renderCard(mostCommentedFilmsContainer, films.slice().sort((previous, current) => {
-      return current.comments.length - previous.comments.length;
-    })[i]);
+  const filmsSortedByComments = films.slice().sort((previous, current) => {
+    return current.comments.length - previous.comments.length;
+  });
+  for (let i = 0; i < Math.min(FILMS_MOST_COMMENTED_CARDS_NUMBER, filmsSortedByComments.length); i++) {
+    renderCard(mostCommentedFilmsContainer, filmsSortedByComments[i]);
   }
 };
 renderTheWholeCatalog();
