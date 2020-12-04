@@ -1,4 +1,4 @@
-import {createElement} from '../util.js';
+import ViewWithHandler from './view-with-handlers';
 import dayjs from "dayjs";
 import {EMOTIONS} from '../const.js';
 
@@ -133,24 +133,13 @@ const createFilmPopup = (film) => {
 </section>`;
 };
 
-export default class FilmPopup {
+export default class FilmPopup extends ViewWithHandler {
   constructor(film) {
-    this._element = null;
+    super();
     this._film = film;
   }
 
   getTemplate() {
     return createFilmPopup(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

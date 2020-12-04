@@ -55,16 +55,16 @@ const renderTheWholeCatalog = () => {
       renderedFilms += FILMS_STEP_LOAD;
 
       if (renderedFilms >= films.length) {
-        showBoreButton.remove();
-        showBoreButton.removeEventListener(`click`, onShowMoreButtonClick);
+        showMoreButton.getElement().remove();
+        showMoreButton.removeHandler(`click`);
       }
     };
 
     const filmsCatalog = filmsContainer.querySelector(`.films-list`);
-    render(filmsCatalog, new ShowMoreButtonView().getElement());
+    const showMoreButton = new ShowMoreButtonView();
+    render(filmsCatalog, showMoreButton.getElement());
 
-    const showBoreButton = filmsCatalog.querySelector(`.films-list__show-more`);
-    showBoreButton.addEventListener(`click`, onShowMoreButtonClick);
+    showMoreButton.setHandler(`click`, onShowMoreButtonClick);
   }
 
   render(filmsContainer, new TopRaitedContainerView().getElement());

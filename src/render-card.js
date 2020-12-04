@@ -5,26 +5,38 @@ import FilmCardView from './view/film-card';
 const pageBody = document.querySelector(`body`);
 
 export const renderCard = (container, film) => {
-  const card = new FilmCardView(film).getElement();
+  const card = new FilmCardView(film);
+  const popup = new FilmPopupView(film);
 
   const closePopup = () => {
-    const popup = pageBody.querySelector(`.film-details`);
-    popup.remove();
-    popup.querySelector(`.film-details__close-btn`).removeEventListener(`click`, onPopupCrossClick);
+    popup.getElement().remove();
+    popup.getElement().querySelector(`.film-details__close-btn`).removeEventListener(`click`, onPopupCrossClick);
+    // popup.removeHandler();
     document.removeEventListener(`keyup`, onPopupEscPress);
     pageBody.classList.remove(`hide-overflow`);
   };
 
-  const onCardClick = (evt) => {
+  const openPopup = (evt) => {
     evt.preventDefault();
     if (pageBody.querySelector(`.film-details`)) {
       closePopup();
     }
-    const popup = new FilmPopupView(film).getElement();
-    render(pageBody, popup);
-    popup.querySelector(`.film-details__close-btn`).addEventListener(`click`, onPopupCrossClick);
+    render(pageBody, popup.getElement());
+    popup.setHandler(`click`, onPopupCrossClick, `.film-details__close-btn`);
     document.addEventListener(`keyup`, onPopupEscPress);
     pageBody.classList.add(`hide-overflow`);
+  };
+
+  const onCardPosterClick = (evt) => {
+    openPopup(evt);
+  };
+
+  const onCardTitleClick = (evt) => {
+    openPopup(evt);
+  };
+
+  const onCardCommentsClick = (evt) => {
+    openPopup(evt);
   };
 
   const onPopupEscPress = (evt) => {
@@ -35,9 +47,9 @@ export const renderCard = (container, film) => {
     closePopup();
   };
 
-  card.querySelector(`.film-card__poster`).addEventListener(`click`, onCardClick);
-  card.querySelector(`.film-card__title`).addEventListener(`click`, onCardClick);
-  card.querySelector(`.film-card__comments`).addEventListener(`click`, onCardClick);
+  card.setHandler(`click`, onCardPosterClick, `.film-card__poster`);
+  card.setHandler(`click`, onCardTitleClick, `.film-card__title`);
+  card.setHandler(`click`, onCardCommentsClick, `.film-card__comments`);
 
-  render(container, card);
+  render(container, card.getElement());
 };

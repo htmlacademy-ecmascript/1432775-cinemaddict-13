@@ -1,4 +1,4 @@
-import {createElement} from '../util.js';
+import ViewWithHandler from './view-with-handlers';
 
 const createFilmCard = (film) => {
   const {title, raiting, date, duration, genre, poster, description, comments} = film;
@@ -21,24 +21,13 @@ const createFilmCard = (film) => {
 </article>`;
 };
 
-export default class FilmCard {
+export default class FilmCard extends ViewWithHandler {
   constructor(film) {
-    this._element = null;
+    super();
     this._film = film;
   }
 
   getTemplate() {
     return createFilmCard(this._film);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
