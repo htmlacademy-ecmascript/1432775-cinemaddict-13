@@ -9,18 +9,19 @@ export const renderCard = (container, film) => {
   const popup = new FilmPopupView(film);
 
   const closePopup = () => {
-    popup.getElement().remove();
-    popup.getElement().querySelector(`.film-details__close-btn`).removeEventListener(`click`, onPopupCrossClick);
-    // popup.removeHandler();
-    document.removeEventListener(`keyup`, onPopupEscPress);
-    pageBody.classList.remove(`hide-overflow`);
+    const existingPopup = pageBody.querySelector(`.film-details`);
+    if (existingPopup) {
+      existingPopup.remove();
+      popup.removeHandler(`click`, `.film-details__close-btn`);
+      document.removeEventListener(`keyup`, onPopupEscPress);
+      pageBody.classList.remove(`hide-overflow`);
+    }
   };
 
   const openPopup = (evt) => {
+    card.removeHandler(`click`, `.film-card__poster`);
     evt.preventDefault();
-    if (pageBody.querySelector(`.film-details`)) {
-      closePopup();
-    }
+    closePopup();
     render(pageBody, popup.getElement());
     popup.setHandler(`click`, onPopupCrossClick, `.film-details__close-btn`);
     document.addEventListener(`keyup`, onPopupEscPress);

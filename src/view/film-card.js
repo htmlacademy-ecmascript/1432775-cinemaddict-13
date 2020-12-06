@@ -1,4 +1,4 @@
-import ViewWithHandler from './view-with-handlers';
+import AbstractView from './abstract-view';
 
 const createFilmCard = (film) => {
   const {title, raiting, date, duration, genre, poster, description, comments} = film;
@@ -21,7 +21,7 @@ const createFilmCard = (film) => {
 </article>`;
 };
 
-export default class FilmCard extends ViewWithHandler {
+export default class FilmCard extends AbstractView {
   constructor(film) {
     super();
     this._film = film;

@@ -1,10 +1,10 @@
-import ViewWithHandler from './view-with-handlers';
+import AbstractView from './abstract-view';
 
 const createShowMoreButton = () => {
   return `<button class="films-list__show-more">Show more</button>`;
 };
 
-export default class ShowMoreButton extends ViewWithHandler {
+export default class ShowMoreButton extends AbstractView {
   getTemplate() {
     return createShowMoreButton();
   }

@@ -1,4 +1,4 @@
-import ViewWithHandler from './view-with-handlers';
+import AbstractView from './abstract-view';
 import dayjs from "dayjs";
 import {EMOTIONS} from '../const.js';
 
@@ -133,7 +133,7 @@ const createFilmPopup = (film) => {
 </section>`;
 };
 
-export default class FilmPopup extends ViewWithHandler {
+export default class FilmPopup extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
