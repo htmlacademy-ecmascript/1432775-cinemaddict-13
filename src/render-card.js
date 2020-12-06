@@ -21,7 +21,7 @@ export const renderCard = (container, film) => {
     evt.preventDefault();
     closePopup();
     popup = new FilmPopupView(film);
-    render(pageBody, popup.getElement());
+    render(pageBody, popup);
     popup.setHandler(`click`, onPopupCrossClick, `.film-details__close-btn`);
     document.addEventListener(`keyup`, onPopupEscPress);
     pageBody.classList.add(`hide-overflow`);
