@@ -24,10 +24,10 @@ const films = new Array(MOCK_FILMS).fill().map(() => {
 const user = new UserMock().userStats;
 
 const siteHeader = document.querySelector(`.header`);
-render(siteHeader, new UserIconView(user.avatar, user.raiting).getElement());
+render(siteHeader, new UserIconView(user.avatar, user.raiting));
 
 const siteMain = document.querySelector(`.main`);
-render(siteMain, new SiteMenuView(user).getElement(), `afterbegin`);
+render(siteMain, new SiteMenuView(user), `afterbegin`);
 
 const renderTheWholeCatalog = () => {
   const siteCatalog = new SiteCatalogView(MOCK_FILMS < 1);
@@ -38,7 +38,7 @@ const renderTheWholeCatalog = () => {
     return;
   }
 
-  render(siteMain, new SiteSortView().getElement());
+  render(siteMain, new SiteSortView());
   render(siteMain, filmsContainer);
 
   const filmsListContainer = filmsContainer.querySelector(`.films-list__container`);
@@ -62,13 +62,13 @@ const renderTheWholeCatalog = () => {
 
     const filmsCatalog = filmsContainer.querySelector(`.films-list`);
     const showMoreButton = new ShowMoreButtonView();
-    render(filmsCatalog, showMoreButton.getElement());
+    render(filmsCatalog, showMoreButton);
 
     showMoreButton.setHandler(`click`, onShowMoreButtonClick);
   }
 
-  render(filmsContainer, new TopRaitedContainerView().getElement());
-  render(filmsContainer, new MostCommentedContainerView().getElement());
+  render(filmsContainer, new TopRaitedContainerView());
+  render(filmsContainer, new MostCommentedContainerView());
 
   const topRaitedFilmsContainer = filmsContainer.querySelector(`.films-list--extra .films-list__container`);
   const filmsSortedByRaiting = films.slice().sort((previous, current) => {
@@ -90,4 +90,4 @@ renderTheWholeCatalog();
 
 const siteFooter = document.querySelector(`.footer`);
 const footerStats = siteFooter.querySelector(`.footer__statistics`);
-render(footerStats, new FilmsNumberView(AVAILABLE_FILMS).getElement());
+render(footerStats, new FilmsNumberView(AVAILABLE_FILMS));

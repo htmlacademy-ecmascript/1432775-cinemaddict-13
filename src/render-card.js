@@ -3,15 +3,14 @@ import FilmPopupView from './view/film-popup';
 import FilmCardView from './view/film-card';
 
 const pageBody = document.querySelector(`body`);
+let popup;
 
 export const renderCard = (container, film) => {
   const card = new FilmCardView(film);
-  const popup = new FilmPopupView(film);
 
   const closePopup = () => {
-    const existingPopup = pageBody.querySelector(`.film-details`);
-    if (existingPopup) {
-      existingPopup.remove();
+    if (pageBody.querySelector(`.film-details`)) {
+      popup.getElement().remove();
       popup.removeHandler(`click`, `.film-details__close-btn`);
       document.removeEventListener(`keyup`, onPopupEscPress);
       pageBody.classList.remove(`hide-overflow`);
@@ -19,9 +18,9 @@ export const renderCard = (container, film) => {
   };
 
   const openPopup = (evt) => {
-    card.removeHandler(`click`, `.film-card__poster`);
     evt.preventDefault();
     closePopup();
+    popup = new FilmPopupView(film);
     render(pageBody, popup.getElement());
     popup.setHandler(`click`, onPopupCrossClick, `.film-details__close-btn`);
     document.addEventListener(`keyup`, onPopupEscPress);
