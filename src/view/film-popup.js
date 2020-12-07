@@ -137,9 +137,20 @@ export default class FilmPopup extends AbstractView {
   constructor(film) {
     super();
     this._film = film;
+    this._crossClickHandler = this._crossClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmPopup(this._film);
+  }
+
+  _crossClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.crossClick(evt);
+  }
+
+  setCrossClickHandler(cb) {
+    this._callback.crossClick = cb;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._crossClickHandler);
   }
 }

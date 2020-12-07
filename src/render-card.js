@@ -11,7 +11,6 @@ export const renderCard = (container, film) => {
   const closePopup = () => {
     if (pageBody.querySelector(`.film-details`)) {
       popup.getElement().remove();
-      popup.removeHandler(`click`, `.film-details__close-btn`);
       document.removeEventListener(`keyup`, onPopupEscPress);
       pageBody.classList.remove(`hide-overflow`);
     }
@@ -22,7 +21,7 @@ export const renderCard = (container, film) => {
     closePopup();
     popup = new FilmPopupView(film);
     render(pageBody, popup);
-    popup.setHandler(`click`, onPopupCrossClick, `.film-details__close-btn`);
+    popup.setCrossClickHandler(onPopupCrossClick);
     document.addEventListener(`keyup`, onPopupEscPress);
     pageBody.classList.add(`hide-overflow`);
   };
@@ -47,9 +46,9 @@ export const renderCard = (container, film) => {
     closePopup();
   };
 
-  card.setHandler(`click`, onCardPosterClick, `.film-card__poster`);
-  card.setHandler(`click`, onCardTitleClick, `.film-card__title`);
-  card.setHandler(`click`, onCardCommentsClick, `.film-card__comments`);
+  card.setPosterClickHandler(onCardPosterClick);
+  card.setTitleClickHandler(onCardTitleClick);
+  card.setCommentsClickHandler(onCardCommentsClick);
 
-  render(container, card.getElement());
+  render(container, card);
 };

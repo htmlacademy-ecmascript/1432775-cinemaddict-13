@@ -56,7 +56,6 @@ const renderTheWholeCatalog = () => {
 
       if (renderedFilms >= films.length) {
         showMoreButton.getElement().remove();
-        showMoreButton.removeHandler(`click`);
       }
     };
 
@@ -64,7 +63,7 @@ const renderTheWholeCatalog = () => {
     const showMoreButton = new ShowMoreButtonView();
     render(filmsCatalog, showMoreButton);
 
-    showMoreButton.setHandler(`click`, onShowMoreButtonClick);
+    showMoreButton.setClickHandler(onShowMoreButtonClick);
   }
 
   render(filmsContainer, new TopRaitedContainerView());
