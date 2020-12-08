@@ -197,7 +197,6 @@ const renderTheWholeCatalog = () => {
 
       if (renderedFilms >= films.length) {
         showMoreButton.getElement().remove();
-        showMoreButton.removeHandler(`click`);
       }
     };
 
@@ -205,7 +204,7 @@ const renderTheWholeCatalog = () => {
     const showMoreButton = new _view_show_more_button__WEBPACK_IMPORTED_MODULE_5__["default"]();
     Object(_util_js__WEBPACK_IMPORTED_MODULE_10__["render"])(filmsCatalog, showMoreButton);
 
-    showMoreButton.setHandler(`click`, onShowMoreButtonClick);
+    showMoreButton.setClickHandler(onShowMoreButtonClick);
   }
 
   Object(_util_js__WEBPACK_IMPORTED_MODULE_10__["render"])(filmsContainer, new _view_top_raited_container__WEBPACK_IMPORTED_MODULE_6__["default"]());
@@ -457,7 +456,6 @@ const renderCard = (container, film) => {
   const closePopup = () => {
     if (pageBody.querySelector(`.film-details`)) {
       popup.getElement().remove();
-      popup.removeHandler(`click`, `.film-details__close-btn`);
       document.removeEventListener(`keyup`, onPopupEscPress);
       pageBody.classList.remove(`hide-overflow`);
     }
@@ -468,7 +466,7 @@ const renderCard = (container, film) => {
     closePopup();
     popup = new _view_film_popup__WEBPACK_IMPORTED_MODULE_1__["default"](film);
     Object(_util_js__WEBPACK_IMPORTED_MODULE_0__["render"])(pageBody, popup);
-    popup.setHandler(`click`, onPopupCrossClick, `.film-details__close-btn`);
+    popup.setCrossClickHandler(onPopupCrossClick);
     document.addEventListener(`keyup`, onPopupEscPress);
     pageBody.classList.add(`hide-overflow`);
   };
@@ -493,11 +491,11 @@ const renderCard = (container, film) => {
     closePopup();
   };
 
-  card.setHandler(`click`, onCardPosterClick, `.film-card__poster`);
-  card.setHandler(`click`, onCardTitleClick, `.film-card__title`);
-  card.setHandler(`click`, onCardCommentsClick, `.film-card__comments`);
+  card.setPosterClickHandler(onCardPosterClick);
+  card.setTitleClickHandler(onCardTitleClick);
+  card.setCommentsClickHandler(onCardCommentsClick);
 
-  Object(_util_js__WEBPACK_IMPORTED_MODULE_0__["render"])(container, card.getElement());
+  Object(_util_js__WEBPACK_IMPORTED_MODULE_0__["render"])(container, card);
 };
 
 
@@ -594,30 +592,6 @@ class AbstractView {
   removeElement() {
     this._element = null;
   }
-
-  setHandler(event, cb, childIdentifier) {
-    if (childIdentifier) {
-      this._callback[childIdentifier] = {event: cb};
-      this.getElement().querySelector(`${childIdentifier}`).addEventListener(`${event}`, this._callback[childIdentifier].event);
-    } else {
-      this._callback[event] = cb;
-      this.getElement().addEventListener(`${event}`, this._callback[event]);
-    }
-  }
-
-  removeHandler(event, childIdentifier) {
-    if (childIdentifier) {
-      this.getElement().querySelector(`${childIdentifier}`).removeEventListener(`${event}`, this._callback[childIdentifier].event);
-      if (Object.keys(this._callback[childIdentifier]).length === 1) {
-        delete this._callback[childIdentifier];
-      } else {
-        delete this._callback[childIdentifier].event;
-      }
-    } else {
-      this.getElement().removeEventListener(`${event}`, this._callback[event]);
-      delete this._callback[event];
-    }
-  }
 }
 
 
@@ -661,10 +635,43 @@ class FilmCard extends _abstract_view__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(film) {
     super();
     this._film = film;
+    this._posterClickHandler = this._posterClickHandler.bind(this);
+    this._titleClickHandler = this._titleClickHandler.bind(this);
+    this._commentsClickHandler = this._commentsClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmCard(this._film);
+  }
+
+  _posterClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.posterClick(evt);
+  }
+
+  setPosterClickHandler(cb) {
+    this._callback.posterClick = cb;
+    this.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, this._posterClickHandler);
+  }
+
+  _titleClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.titleClick(evt);
+  }
+
+  setTitleClickHandler(cb) {
+    this._callback.titleClick = cb;
+    this.getElement().querySelector(`.film-card__title`).addEventListener(`click`, this._titleClickHandler);
+  }
+
+  _commentsClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.commentsClick(evt);
+  }
+
+  setCommentsClickHandler(cb) {
+    this._callback.commentsClick = cb;
+    this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, this._commentsClickHandler);
   }
 }
 
@@ -824,10 +831,21 @@ class FilmPopup extends _abstract_view__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(film) {
     super();
     this._film = film;
+    this._crossClickHandler = this._crossClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmPopup(this._film);
+  }
+
+  _crossClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.crossClick(evt);
+  }
+
+  setCrossClickHandler(cb) {
+    this._callback.crossClick = cb;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._crossClickHandler);
   }
 }
 
@@ -950,8 +968,22 @@ const createShowMoreButton = () => {
 };
 
 class ShowMoreButton extends _abstract_view__WEBPACK_IMPORTED_MODULE_0__["default"] {
+  constructor() {
+    super();
+    this._clickHandler = this._clickHandler.bind(this);
+  }
   getTemplate() {
     return createShowMoreButton();
+  }
+
+  _clickHandler(evt) {
+    evt.preventDefault();
+    this._callback.click(evt);
+  }
+
+  setClickHandler(cb) {
+    this._callback.click = cb;
+    this.getElement().addEventListener(`click`, this._clickHandler);
   }
 }
 
