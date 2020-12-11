@@ -1,4 +1,4 @@
-import {render, isKeyPressed} from './util.js';
+import {render, isKeyPressed, remove} from './util.js';
 import FilmPopupView from './view/film-popup';
 import FilmCardView from './view/film-card';
 
@@ -10,7 +10,7 @@ export const renderCard = (container, film) => {
 
   const closePopup = () => {
     if (pageBody.querySelector(`.film-details`)) {
-      popup.getElement().remove();
+      remove(popup);
       document.removeEventListener(`keyup`, onPopupEscPress);
       pageBody.classList.remove(`hide-overflow`);
     }
