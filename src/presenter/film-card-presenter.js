@@ -1,28 +1,15 @@
-import {render, isKeyPressed} from '../util.js';
-import FilmPopupView from '../view/film-popup';
+import {render} from '../util.js';
 import FilmCardView from '../view/film-card';
-import {replace, remove, updateUserPropertyArray} from '../util.js';
+import {replace, remove} from '../util.js';
+import AbstractFilmCardPresenter from './abstract-card-presenter';
+import DuplicatedFilmPresenter from './duplicated-card-presenter';
 
-const pageBody = document.querySelector(`body`);
-let popup;
+export default class CardPresenter extends AbstractFilmCardPresenter {
+  constructor(filmChangeCb, userChangeCb, closePopupsCb) {
+    super(filmChangeCb, userChangeCb, closePopupsCb);
 
-export default class CardPresenter {
-  constructor(filmChangeCb, userChangeCb) {
-    this._card = null;
-    this._filmChange = filmChangeCb;
-    this._userChange = userChangeCb;
+    this._closePopups = closePopupsCb;
     this._duplicatedCards = [];
-
-    this._closePopup = this._closePopup.bind(this);
-    this._openPopup = this._openPopup.bind(this);
-    this._onCardPosterClick = this._onCardPosterClick.bind(this);
-    this._onCardTitleClick = this._onCardTitleClick.bind(this);
-    this._onCardCommentsClick = this._onCardCommentsClick.bind(this);
-    this._onPopupEscPress = this._onPopupEscPress.bind(this);
-    this._onPopupCrossClick = this._onPopupCrossClick.bind(this);
-    this._onCardWatchlistClick = this._onCardWatchlistClick.bind(this);
-    this._onCardToHistoryClick = this._onCardToHistoryClick.bind(this);
-    this._onCardFavouritesClick = this._onCardFavouritesClick.bind(this);
   }
 
   init(film, user, container = this._container) {
@@ -34,12 +21,7 @@ export default class CardPresenter {
 
     this._card = new FilmCardView(this._film, this._user);
 
-    this._card.setPosterClickHandler(this._onCardPosterClick);
-    this._card.setTitleClickHandler(this._onCardTitleClick);
-    this._card.setCommentsClickHandler(this._onCardCommentsClick);
-    this._card._setToWatchListButtonClickHandler(this._onCardWatchlistClick);
-    this._card._setWatchedButtonClickHandler(this._onCardToHistoryClick);
-    this._card._setToFavouritesButtonClickHandler(this._onCardFavouritesClick);
+    this._setEventListeners();
 
     if (prevFilmCardView === null) {
       render(this._container, this._card);
@@ -51,69 +33,21 @@ export default class CardPresenter {
     }
 
     remove(prevFilmCardView);
+    this._duplicatedCards.forEach((card) => card.init());
   }
 
   duplicateCard(container) {
-    // console.log(this._card);
-    const duplicatedCard = Object.assign({}, this._card);
-    duplicatedCard._element = duplicatedCard._element.cloneNode(true);
-    duplicatedCard.setPosterClickHandler(this._onCardPosterClick);
+    const duplicatedCard = new DuplicatedFilmPresenter(this._filmChange, this._userChange, this, this._closePopups);
     this._duplicatedCards.push(duplicatedCard);
-    console.log(duplicatedCard);
-    render(container, duplicatedCard._element);
+    duplicatedCard.init(container);
   }
 
-  destroy() {
-    remove(this._card);
-  }
-
-  _closePopup() {
-    if (pageBody.querySelector(`.film-details`)) {
-      remove(popup);
+  closePopup() {
+    this._duplicatedCards.forEach((card) => card.closePopup());
+    if (this._popup) {
+      remove(this._popup);
       document.removeEventListener(`keyup`, this._onPopupEscPress);
-      pageBody.classList.remove(`hide-overflow`);
+      this._pageBody.classList.remove(`hide-overflow`);
     }
-  }
-
-  _openPopup(evt) {
-    evt.preventDefault();
-    this._closePopup();
-    popup = new FilmPopupView(this._film);
-    render(pageBody, popup);
-    popup.setCrossClickHandler(this._onPopupCrossClick);
-    document.addEventListener(`keyup`, this._onPopupEscPress);
-    pageBody.classList.add(`hide-overflow`);
-  }
-
-  _onCardWatchlistClick() {
-    this._userChange(`watchlist`, updateUserPropertyArray(this._user.watchlist, this._film.id), this._film);
-  }
-
-  _onCardFavouritesClick() {
-    this._userChange(`favourites`, updateUserPropertyArray(this._user.favourites, this._film.id), this._film);
-  }
-
-  _onCardToHistoryClick() {
-    this._userChange(`history`, updateUserPropertyArray(this._user.history, this._film.id), this._film);
-  }
-
-  _onCardPosterClick(evt) {
-    this._openPopup(evt);
-  }
-
-  _onCardTitleClick(evt) {
-    this._openPopup(evt);
-  }
-
-  _onCardCommentsClick(evt) {
-    this._openPopup(evt);
-  }
-
-  _onPopupEscPress(evt) {
-    isKeyPressed(evt, this._closePopup, `Escape`);
-  }
-
-  _onPopupCrossClick() {
-    this._closePopup();
   }
 }

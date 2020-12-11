@@ -28,6 +28,7 @@ export default class Catalog {
     this._onShowMoreButtonClick = this._onShowMoreButtonClick.bind(this);
     this._onFilmChange = this._onFilmChange.bind(this);
     this._onUserPropertyChange = this._onUserPropertyChange.bind(this);
+    this._closeAllPopups = this._closeAllPopups.bind(this);
   }
 
   init(films, user) {
@@ -62,6 +63,10 @@ export default class Catalog {
     remove(this._showMoreButton);
   }
 
+  _closeAllPopups() {
+    Object.values(this._filmCardPresenter).forEach((presenter) => presenter.closePopup());
+  }
+
   _renderNoFilms() {
     if (this._films.length < 1) {
       render(this._siteMain, this._siteCatalog);
@@ -74,23 +79,14 @@ export default class Catalog {
   }
 
   _renderCard(container, film) {
-    const filmPresenter = new FilmCardPresenter(this._onFilmChange, this._onUserPropertyChange);
-    filmPresenter.init(film, this._user, container);
-    this._filmCardPresenter[film.id] = filmPresenter;
-  }
-
-  _renderExistingCard(container, film) {
     const oldfilmPresenter = this._filmCardPresenter[film.id];
     if (oldfilmPresenter) {
-      // console.log(oldfilmPresenter);
-      // debugger;
       oldfilmPresenter.duplicateCard(container);
+      return;
     }
-    // console.log(film);
-    // console.log(this._filmCardPresenter);
-    // const filmPresenter = new FilmCardPresenter(this._onFilmChange, this._onUserPropertyChange);
-    // filmPresenter.init(film, this._user, container);
-    // this._filmCardPresenter[film.id] = filmPresenter;
+    const filmPresenter = new FilmCardPresenter(this._onFilmChange, this._onUserPropertyChange, this._closeAllPopups);
+    filmPresenter.init(film, this._user, container);
+    this._filmCardPresenter[film.id] = filmPresenter;
   }
 
   _renderFilmCards() {
@@ -132,7 +128,7 @@ export default class Catalog {
       return current.raiting - previous.raiting;
     });
     for (let i = 0; i < Math.min(this._FILMS_TOP_RAITED_CARDS_NUMBER, filmsSortedByRaiting.length); i++) {
-      this._renderExistingCard(topRaitedFilmsContainer, filmsSortedByRaiting[i]);
+      this._renderCard(topRaitedFilmsContainer, filmsSortedByRaiting[i]);
     }
   }
 
