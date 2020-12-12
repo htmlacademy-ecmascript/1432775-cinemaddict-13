@@ -123,6 +123,9 @@ export default class MockFilm {
     this._actors = generateRandomSet(ACTORS);
     this._country = COUNTRIES[getRandomInteger(0, COUNTRIES.length - 1)];
     this._age = AGES[getRandomInteger(0, AGES.length - 1)];
+    this._isInWatchlist = Boolean(getRandomInteger(0, 1));
+    this._isInHistory = Boolean(getRandomInteger(0, 1));
+    this._isFavourite = Boolean(getRandomInteger(0, 1));
   }
 
   getNewFilm() {
@@ -141,7 +144,10 @@ export default class MockFilm {
       writers: this._writers,
       actors: this._actors,
       country: this._country,
-      age: this._age
+      age: this._age,
+      isInWatchlist: this._isInWatchlist,
+      isInHistory: this._isInHistory,
+      isFavourite: this._isFavourite
     };
   }
 }

@@ -63,7 +63,6 @@ export const isKeyPressed = (evt, cb, keyName) => {
 
 export const updateElement = (elementsArr, elementToUpdate) => {
   const index = elementsArr.findIndex((element) => element.id === elementToUpdate.id);
-
   if (index === -1) {
     return elementsArr;
   }

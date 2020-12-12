@@ -1,12 +1,12 @@
 import AbstractView from './abstract-view';
 
-const createFilmCard = (film, user) => {
+const createFilmCard = (film) => {
 
-  const getActiveClass = (element, array) => {
-    return (array.includes(element)) ? ` film-card__controls-item--active` : ``;
+  const getActiveClass = (property) => {
+    return (film[property] === true) ? ` film-card__controls-item--active` : ``;
   };
 
-  const {title, raiting, date, duration, genre, poster, description, comments, id} = film;
+  const {title, raiting, date, duration, genre, poster, description, comments} = film;
   return `<article class="film-card">
   <h3 class="film-card__title">${title}</h3>
   <p class="film-card__rating">${raiting}</p>
@@ -19,18 +19,17 @@ const createFilmCard = (film, user) => {
   <p class="film-card__description">${description}</p>
   <a class="film-card__comments">${comments.length} ${comments.length === 1 ? `comment` : `comments`}</a>
   <div class="film-card__controls">
-    <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist${getActiveClass(id, user.watchlist)}" type="button">Add to watchlist</button>
-    <button class="film-card__controls-item button film-card__controls-item--mark-as-watched${getActiveClass(id, user.history)}" type="button">Mark as watched</button>
-    <button class="film-card__controls-item button film-card__controls-item--favorite${getActiveClass(id, user.favourites)}" type="button">Mark as favorite</button>
+    <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist${getActiveClass(`isInWatchlist`)}" type="button">Add to watchlist</button>
+    <button class="film-card__controls-item button film-card__controls-item--mark-as-watched${getActiveClass(`isInHistory`)}" type="button">Mark as watched</button>
+    <button class="film-card__controls-item button film-card__controls-item--favorite${getActiveClass(`isFavourite`)}" type="button">Mark as favorite</button>
   </div>
 </article>`;
 };
 
 export default class FilmCard extends AbstractView {
-  constructor(film, user) {
+  constructor(film) {
     super();
     this._film = film;
-    this._user = user;
     this._posterClickHandler = this._posterClickHandler.bind(this);
     this._titleClickHandler = this._titleClickHandler.bind(this);
     this._commentsClickHandler = this._commentsClickHandler.bind(this);
@@ -40,7 +39,7 @@ export default class FilmCard extends AbstractView {
   }
 
   getTemplate() {
-    return createFilmCard(this._film, this._user);
+    return createFilmCard(this._film);
   }
 
   _posterClickHandler(evt) {

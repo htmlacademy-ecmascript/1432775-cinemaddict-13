@@ -1,27 +1,45 @@
-import {render} from '../util.js';
+import {render, replace, remove, isKeyPressed} from '../util.js';
 import FilmCardView from '../view/film-card';
-import {replace, remove} from '../util.js';
-import AbstractFilmCardPresenter from './abstract-card-presenter';
-import DuplicatedFilmPresenter from './duplicated-card-presenter';
+import FilmPopupView from '../view/film-popup';
 
-export default class CardPresenter extends AbstractFilmCardPresenter {
+export default class CardPresenter {
   constructor(filmChangeCb, userChangeCb, closePopupsCb) {
-    super(filmChangeCb, userChangeCb, closePopupsCb);
 
     this._closePopups = closePopupsCb;
-    this._duplicatedCards = [];
+
+    this._card = null;
+    this._filmChange = filmChangeCb;
+    this._userChange = userChangeCb;
+    this._closePopups = closePopupsCb;
+    this._pageBody = document.querySelector(`body`);
+    this._popup = null;
+
+    this.closePopup = this.closePopup.bind(this);
+    this._openPopup = this._openPopup.bind(this);
+    this._onCardPosterClick = this._onCardPosterClick.bind(this);
+    this._onCardTitleClick = this._onCardTitleClick.bind(this);
+    this._onCardCommentsClick = this._onCardCommentsClick.bind(this);
+    this._onPopupEscPress = this._onPopupEscPress.bind(this);
+    this._onPopupCrossClick = this._onPopupCrossClick.bind(this);
+    this._onCardWatchlistClick = this._onCardWatchlistClick.bind(this);
+    this._onCardToHistoryClick = this._onCardToHistoryClick.bind(this);
+    this._onCardFavouritesClick = this._onCardFavouritesClick.bind(this);
   }
 
-  init(film, user, container = this._container) {
+  init(film, container = this._container) {
     this._film = film;
-    this._user = user;
     this._container = container;
 
     const prevFilmCardView = this._card;
 
-    this._card = new FilmCardView(this._film, this._user);
+    this._card = new FilmCardView(this._film);
 
-    this._setEventListeners();
+    this._card.setPosterClickHandler(this._onCardPosterClick);
+    this._card.setTitleClickHandler(this._onCardTitleClick);
+    this._card.setCommentsClickHandler(this._onCardCommentsClick);
+    this._card.setToWatchListButtonClickHandler(this._onCardWatchlistClick);
+    this._card.setWatchedButtonClickHandler(this._onCardToHistoryClick);
+    this._card.setToFavouritesButtonClickHandler(this._onCardFavouritesClick);
 
     if (prevFilmCardView === null) {
       render(this._container, this._card);
@@ -33,17 +51,13 @@ export default class CardPresenter extends AbstractFilmCardPresenter {
     }
 
     remove(prevFilmCardView);
-    this._duplicatedCards.forEach((card) => card.init());
   }
 
-  duplicateCard(container) {
-    const duplicatedCard = new DuplicatedFilmPresenter(this._filmChange, this._userChange, this, this._closePopups);
-    this._duplicatedCards.push(duplicatedCard);
-    duplicatedCard.init(container);
+  destroy() {
+    remove(this._card);
   }
 
   closePopup() {
-    this._duplicatedCards.forEach((card) => card.closePopup());
     if (this._popup) {
       remove(this._popup);
       document.removeEventListener(`keyup`, this._onPopupEscPress);
@@ -51,8 +65,63 @@ export default class CardPresenter extends AbstractFilmCardPresenter {
     }
   }
 
-  destroy() {
-    this._duplicatedCards.forEach((card) => card.destroy());
-    remove(this._card);
+  _openPopup(evt) {
+    evt.preventDefault();
+    this._closePopups();
+    this._popup = new FilmPopupView(this._film);
+    render(this._pageBody, this._popup);
+    this._popup.setCrossClickHandler(this._onPopupCrossClick);
+    document.addEventListener(`keyup`, this._onPopupEscPress);
+    this._pageBody.classList.add(`hide-overflow`);
+  }
+
+  _onCardWatchlistClick() {
+    this._filmChange(Object.assign(
+        {},
+        this._film,
+        {
+          isInWatchlist: !this._film.isInWatchlist
+        }
+    ));
+  }
+
+  _onCardFavouritesClick() {
+    this._filmChange(Object.assign(
+        {},
+        this._film,
+        {
+          isFavourite: !this._film.isFavourite
+        }
+    ));
+  }
+
+  _onCardToHistoryClick() {
+    this._filmChange(Object.assign(
+        {},
+        this._film,
+        {
+          isInHistory: !this._film.isInHistory
+        }
+    ));
+  }
+
+  _onCardPosterClick(evt) {
+    this._openPopup(evt);
+  }
+
+  _onCardTitleClick(evt) {
+    this._openPopup(evt);
+  }
+
+  _onCardCommentsClick(evt) {
+    this._openPopup(evt);
+  }
+
+  _onPopupEscPress(evt) {
+    isKeyPressed(evt, this.closePopup, `Escape`);
+  }
+
+  _onPopupCrossClick() {
+    this.closePopup();
   }
 }

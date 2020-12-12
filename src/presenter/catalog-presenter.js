@@ -18,7 +18,11 @@ export default class Catalog {
     this._userIconView = null;
     this._siteMenuView = null;
     this._siteCatalog = null;
-    this._filmCardPresenter = {};
+    this._filmCardPresenter = {
+      catalog: {},
+      raited: {},
+      commented: {}
+    };
     this._sortType = {
       current: SortType.DEFAULT,
       date: SortType.UP,
@@ -39,11 +43,12 @@ export default class Catalog {
   }
 
   init(films, user) {
+    this._presenterBlocks = Object.keys(this._filmCardPresenter);
     this._films = films;
     this._user = user;
     this._sourcedFilms = films.slice();
     this._userIconView = new UserIconView(this._user.avatar, this._user.raiting);
-    this._siteMenuView = new SiteMenuView(this._user);
+    this._siteMenuView = new SiteMenuView(this._films);
 
     const siteHeader = document.querySelector(`.header`);
     render(siteHeader, this._userIconView);
@@ -56,23 +61,35 @@ export default class Catalog {
 
   _onFilmChange(filmToUpdate) {
     this._films = updateElement(this._films, filmToUpdate);
-    this._filmCardPresenter[filmToUpdate.id].init(filmToUpdate, this._user);
+    this._updatePresenters(filmToUpdate);
   }
 
   _onUserPropertyChange(property, newPropertyArr, film) {
     this._user[property] = newPropertyArr;
-    this._filmCardPresenter[film.id].init(film, this._user);
+    this._updatePresenters(film);
+  }
+
+  _updatePresenters(film) {
+    for (let i = 0; i < this._presenterBlocks.length; i++) {
+      if (this._filmCardPresenter[this._presenterBlocks[i]][film.id]) {
+        this._filmCardPresenter[this._presenterBlocks[i]][film.id].init(film);
+      }
+    }
   }
 
   _clearCatalog() {
-    Object.values(this._filmCardPresenter).forEach((presenter) => presenter.destroy());
-    this._filmCardPresenter = {};
+    for (let i = 0; i < this._presenterBlocks.length; i++) {
+      Object.values(this._filmCardPresenter[this._presenterBlocks[i]]).forEach((presenter) => presenter.destroy());
+      this._filmCardPresenter[this._presenterBlocks[i]] = {};
+    }
     this._renderedFilms = this._FILMS_CARDS_NUMBER;
     remove(this._showMoreButton);
   }
 
   _closeAllPopups() {
-    Object.values(this._filmCardPresenter).forEach((presenter) => presenter.closePopup());
+    for (let i = 0; i < this._presenterBlocks.length; i++) {
+      Object.values(this._filmCardPresenter[this._presenterBlocks[i]]).forEach((presenter) => presenter.closePopup());
+    }
   }
 
   _renderNoFilms() {
@@ -124,15 +141,19 @@ export default class Catalog {
     this._siteSortView.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
-  _renderCard(container, film) {
-    const oldfilmPresenter = this._filmCardPresenter[film.id];
-    if (oldfilmPresenter) {
-      oldfilmPresenter.duplicateCard(container);
-      return;
-    }
+  _renderCard(container, film, block) {
     const filmPresenter = new FilmCardPresenter(this._onFilmChange, this._onUserPropertyChange, this._closeAllPopups);
-    filmPresenter.init(film, this._user, container);
-    this._filmCardPresenter[film.id] = filmPresenter;
+    filmPresenter.init(film, container);
+    switch (block) {
+      case `raited`:
+        this._filmCardPresenter.raited[film.id] = filmPresenter;
+        break;
+      case `commented`:
+        this._filmCardPresenter.commented[film.id] = filmPresenter;
+        break;
+      default:
+        this._filmCardPresenter.catalog[film.id] = filmPresenter;
+    }
   }
 
   _renderFilmCards() {
@@ -180,7 +201,7 @@ export default class Catalog {
       return current.raiting - previous.raiting;
     });
     for (let i = 0; i < Math.min(this._FILMS_TOP_RAITED_CARDS_NUMBER, this._filmsSortedByRaiting.length); i++) {
-      this._renderCard(topRaitedFilmsContainer, this._filmsSortedByRaiting[i]);
+      this._renderCard(topRaitedFilmsContainer, this._filmsSortedByRaiting[i], `raited`);
     }
   }
 
@@ -190,7 +211,7 @@ export default class Catalog {
       return current.comments.length - previous.comments.length;
     });
     for (let i = 0; i < Math.min(this._FILMS_MOST_COMMENTED_CARDS_NUMBER, filmsSortedByComments.length); i++) {
-      this._renderCard(mostCommentedFilmsContainer, filmsSortedByComments[i]);
+      this._renderCard(mostCommentedFilmsContainer, filmsSortedByComments[i], `commented`);
     }
   }
 
