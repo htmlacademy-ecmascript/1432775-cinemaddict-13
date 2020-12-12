@@ -50,4 +50,9 @@ export default class CardPresenter extends AbstractFilmCardPresenter {
       this._pageBody.classList.remove(`hide-overflow`);
     }
   }
+
+  destroy() {
+    this._duplicatedCards.forEach((card) => card.destroy());
+    remove(this._card);
+  }
 }

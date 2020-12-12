@@ -7,6 +7,7 @@ import TopRaitedContainerView from '../view/top-raited-container';
 import MostCommentedContainerView from '../view/most-commented-container';
 import {render, remove, updateElement} from '../util.js';
 import FilmCardPresenter from './film-card-presenter';
+import {SortType} from "../const.js";
 
 export default class Catalog {
   constructor() {
@@ -18,6 +19,11 @@ export default class Catalog {
     this._siteMenuView = null;
     this._siteCatalog = null;
     this._filmCardPresenter = {};
+    this._sortType = {
+      current: SortType.DEFAULT,
+      date: SortType.UP,
+      raiting: SortType.UP
+    };
 
     this._FILMS_CARDS_NUMBER = 5;
     this._FILMS_STEP_LOAD = 5;
@@ -29,11 +35,13 @@ export default class Catalog {
     this._onFilmChange = this._onFilmChange.bind(this);
     this._onUserPropertyChange = this._onUserPropertyChange.bind(this);
     this._closeAllPopups = this._closeAllPopups.bind(this);
+    this._onSortTypeChange = this._onSortTypeChange.bind(this);
   }
 
   init(films, user) {
     this._films = films;
     this._user = user;
+    this._sourcedFilms = films.slice();
     this._userIconView = new UserIconView(this._user.avatar, this._user.raiting);
     this._siteMenuView = new SiteMenuView(this._user);
 
@@ -74,8 +82,46 @@ export default class Catalog {
     }
   }
 
+  _changeSort(type) {
+    switch (type) {
+      case SortType.RAITING:
+        if (this._sortType.raiting === SortType.DOWN) {
+          this._films = this._filmsSortedByRaiting.reverse();
+          this._sortType.raiting = SortType.UP;
+          break;
+        }
+        this._films = this._filmsSortedByRaiting;
+        this._sortType.raiting = SortType.DOWN;
+        break;
+      case SortType.DEFAULT:
+        this._films = this._sourcedFilms;
+        break;
+      case SortType.DATE:
+
+        if (this._sortType.date === SortType.DOWN) {
+          this._films = this._filmsSortedByDate.reverse();
+          this._sortType.date = SortType.UP;
+          break;
+        }
+        this._films = this._filmsSortedByDate;
+        this._sortType.date = SortType.DOWN;
+        break;
+    }
+    this._sortType.current = type;
+  }
+
+  _onSortTypeChange(type) {
+    if (this._sortType.current === SortType.DEFAULT && type === SortType.DEFAULT) {
+      return;
+    }
+    this._changeSort(type);
+    this._clearCatalog();
+    this._renderCatalog();
+  }
+
   _renderSort() {
     render(this._siteMain, this._siteSortView);
+    this._siteSortView.setSortTypeChangeHandler(this._onSortTypeChange);
   }
 
   _renderCard(container, film) {
@@ -122,13 +168,19 @@ export default class Catalog {
     render(this._siteCatalog, this._mostCommentedContainerView);
   }
 
+  _generateFilmsSortedByDate() {
+    this._filmsSortedByDate = this._films.slice().sort((previous, current) => {
+      return current.date - previous.date;
+    });
+  }
+
   _renderTopRaitedFilms() {
     const topRaitedFilmsContainer = this._siteCatalog.getElement().querySelector(`.films-list--extra .films-list__container`);
-    const filmsSortedByRaiting = this._films.slice().sort((previous, current) => {
+    this._filmsSortedByRaiting = this._films.slice().sort((previous, current) => {
       return current.raiting - previous.raiting;
     });
-    for (let i = 0; i < Math.min(this._FILMS_TOP_RAITED_CARDS_NUMBER, filmsSortedByRaiting.length); i++) {
-      this._renderCard(topRaitedFilmsContainer, filmsSortedByRaiting[i]);
+    for (let i = 0; i < Math.min(this._FILMS_TOP_RAITED_CARDS_NUMBER, this._filmsSortedByRaiting.length); i++) {
+      this._renderCard(topRaitedFilmsContainer, this._filmsSortedByRaiting[i]);
     }
   }
 
@@ -143,7 +195,9 @@ export default class Catalog {
   }
 
   _renderCatalog() {
-    this._siteCatalog = new SiteCatalogView(this._films.length < 1);
+    if (!(this._siteCatalog)) {
+      this._siteCatalog = new SiteCatalogView(this._films.length < 1);
+    }
 
     this._renderNoFilms();
 
@@ -160,5 +214,6 @@ export default class Catalog {
 
     this._renderTopRaitedFilms();
     this._renderMostCommentedFilms();
+    this._generateFilmsSortedByDate();
   }
 }
