@@ -2,7 +2,7 @@ import FilmsNumberView from './view/films-number';
 import MockFilm from './mock/films';
 import UserMock from './mock/user';
 import {render} from './util.js';
-import Presenter from './presenter/catalog-presenter';
+import CatalogPresenter from './presenter/catalog-presenter';
 
 const MOCK_FILMS = 15;
 const AVAILABLE_FILMS = `123 456`;
@@ -12,7 +12,7 @@ const films = new Array(MOCK_FILMS).fill().map(() => {
 });
 const user = new UserMock().userStats;
 
-const presenter = new Presenter();
+const presenter = new CatalogPresenter();
 presenter.init(films, user);
 
 const siteFooter = document.querySelector(`.footer`);

@@ -93,10 +93,7 @@ export default class Catalog {
   }
 
   _renderNoFilms() {
-    if (this._films.length < 1) {
-      render(this._siteMain, this._siteCatalog);
-      return;
-    }
+    render(this._siteMain, this._siteCatalog);
   }
 
   _changeSort(type) {
@@ -217,10 +214,13 @@ export default class Catalog {
 
   _renderCatalog() {
     if (!(this._siteCatalog)) {
-      this._siteCatalog = new SiteCatalogView(this._films.length < 1);
+      this._siteCatalog = new SiteCatalogView();
     }
 
-    this._renderNoFilms();
+    if (this._films.length < 1) {
+      this._renderNoFilms();
+      return;
+    }
 
     this._renderSort();
     render(this._siteMain, this._siteCatalog);
