@@ -12,8 +12,9 @@ const films = new Array(MOCK_FILMS).fill().map(() => {
 });
 const user = new UserMock().userStats;
 
+const siteMain = document.querySelector(`.main`);
 const presenter = new CatalogPresenter();
-presenter.init(films, user);
+presenter.init(films, user, siteMain);
 
 const siteFooter = document.querySelector(`.footer`);
 const footerStats = siteFooter.querySelector(`.footer__statistics`);
