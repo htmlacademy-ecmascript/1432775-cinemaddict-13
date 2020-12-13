@@ -4,3 +4,11 @@ export const EMOTIONS = [
   `puke`,
   `angry`
 ];
+
+export const SortType = {
+  DEFAULT: `default`,
+  DATE: `date`,
+  RAITING: `raiting`,
+  UP: `up`,
+  DOWN: `down`
+};
