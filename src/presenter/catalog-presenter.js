@@ -18,16 +18,13 @@ export default class Catalog {
     this._userIconView = null;
     this._siteMenuView = null;
     this._siteCatalog = null;
-    this._filmCardPresenter = {
+    this._filmsSortedByDate = null;
+    this._filmCardPresenterGroups = {
       catalog: {},
       raited: {},
       commented: {}
     };
-    this._sortType = {
-      current: SortType.DEFAULT,
-      date: SortType.UP,
-      raiting: SortType.UP
-    };
+    this._currentSortType = SortType.DEFAULT;
 
     this._FILMS_CARDS_NUMBER = 5;
     this._FILMS_STEP_LOAD = 5;
@@ -42,18 +39,17 @@ export default class Catalog {
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
   }
 
-  init(films, user) {
-    this._presenterBlocks = Object.keys(this._filmCardPresenter);
+  init(films, user, container) {
+    this._presenterGroupNames = Object.keys(this._filmCardPresenterGroups);
     this._films = films;
     this._user = user;
     this._sourcedFilms = films.slice();
     this._userIconView = new UserIconView(this._user.avatar, this._user.raiting);
     this._siteMenuView = new SiteMenuView(this._films);
+    this._siteMain = container;
 
-    const siteHeader = document.querySelector(`.header`);
-    render(siteHeader, this._userIconView);
+    render(this._siteMain.parentElement.querySelector(`.header`), this._userIconView);
 
-    this._siteMain = document.querySelector(`.main`);
     render(this._siteMain, this._siteMenuView, `afterbegin`);
 
     this._renderCatalog();
@@ -70,26 +66,26 @@ export default class Catalog {
   }
 
   _updatePresenters(film) {
-    for (let i = 0; i < this._presenterBlocks.length; i++) {
-      if (this._filmCardPresenter[this._presenterBlocks[i]][film.id]) {
-        this._filmCardPresenter[this._presenterBlocks[i]][film.id].init(film);
+    this._presenterGroupNames.forEach((presenterGroup) => {
+      if (this._filmCardPresenterGroups[presenterGroup][film.id]) {
+        this._filmCardPresenterGroups[presenterGroup][film.id].init(film);
       }
-    }
+    });
   }
 
   _clearCatalog() {
-    for (let i = 0; i < this._presenterBlocks.length; i++) {
-      Object.values(this._filmCardPresenter[this._presenterBlocks[i]]).forEach((presenter) => presenter.destroy());
-      this._filmCardPresenter[this._presenterBlocks[i]] = {};
-    }
+    this._presenterGroupNames.forEach((presenterGroup) => {
+      Object.values(this._filmCardPresenterGroups[presenterGroup]).forEach((presenter) => presenter.destroy());
+      this._filmCardPresenterGroups[presenterGroup] = {};
+    });
     this._renderedFilms = this._FILMS_CARDS_NUMBER;
     remove(this._showMoreButton);
   }
 
   _closeAllPopups() {
-    for (let i = 0; i < this._presenterBlocks.length; i++) {
-      Object.values(this._filmCardPresenter[this._presenterBlocks[i]]).forEach((presenter) => presenter.closePopup());
-    }
+    this._presenterGroupNames.forEach((presenterGroup) => {
+      Object.values(this._filmCardPresenterGroups[presenterGroup]).forEach((presenter) => presenter.closePopup());
+    });
   }
 
   _renderNoFilms() {
@@ -99,35 +95,37 @@ export default class Catalog {
   _changeSort(type) {
     switch (type) {
       case SortType.RAITING:
-        if (this._sortType.raiting === SortType.DOWN) {
-          this._films = this._filmsSortedByRaiting.reverse();
-          this._sortType.raiting = SortType.UP;
-          break;
-        }
         this._films = this._filmsSortedByRaiting;
-        this._sortType.raiting = SortType.DOWN;
         break;
       case SortType.DEFAULT:
         this._films = this._sourcedFilms;
         break;
       case SortType.DATE:
-
-        if (this._sortType.date === SortType.DOWN) {
-          this._films = this._filmsSortedByDate.reverse();
-          this._sortType.date = SortType.UP;
-          break;
+        if (!this._filmsSortedByDate) {
+          this._filmsSortedByDate = this._films.slice().sort((previous, current) => {
+            return current.date - previous.date;
+          });
         }
         this._films = this._filmsSortedByDate;
-        this._sortType.date = SortType.DOWN;
         break;
     }
-    this._sortType.current = type;
+    this._currentSortType = type;
   }
 
   _onSortTypeChange(type) {
-    if (this._sortType.current === SortType.DEFAULT && type === SortType.DEFAULT) {
+    if (this._currentSortType === type) {
       return;
     }
+    if (!this._sortButtons) {
+      this._sortButtons = Array.from(this._siteSortView.getElement().querySelectorAll(`.sort__button`));
+    }
+    this._sortButtons.forEach((sortButton) => {
+      if (sortButton.dataset.sortType === type) {
+        sortButton.classList.add(`sort__button--active`);
+        return;
+      }
+      sortButton.classList.remove(`sort__button--active`);
+    });
     this._changeSort(type);
     this._clearCatalog();
     this._renderCatalog();
@@ -143,13 +141,13 @@ export default class Catalog {
     filmPresenter.init(film, container);
     switch (block) {
       case `raited`:
-        this._filmCardPresenter.raited[film.id] = filmPresenter;
+        this._filmCardPresenterGroups.raited[film.id] = filmPresenter;
         break;
       case `commented`:
-        this._filmCardPresenter.commented[film.id] = filmPresenter;
+        this._filmCardPresenterGroups.commented[film.id] = filmPresenter;
         break;
       default:
-        this._filmCardPresenter.catalog[film.id] = filmPresenter;
+        this._filmCardPresenterGroups.catalog[film.id] = filmPresenter;
     }
   }
 
@@ -184,12 +182,6 @@ export default class Catalog {
 
   _renderMostCommentedContainer() {
     render(this._siteCatalog, this._mostCommentedContainerView);
-  }
-
-  _generateFilmsSortedByDate() {
-    this._filmsSortedByDate = this._films.slice().sort((previous, current) => {
-      return current.date - previous.date;
-    });
   }
 
   _renderTopRaitedFilms() {
@@ -235,6 +227,5 @@ export default class Catalog {
 
     this._renderTopRaitedFilms();
     this._renderMostCommentedFilms();
-    this._generateFilmsSortedByDate();
   }
 }

@@ -8,7 +8,5 @@ export const EMOTIONS = [
 export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
-  RAITING: `raiting`,
-  UP: `up`,
-  DOWN: `down`
+  RAITING: `raiting`
 };
