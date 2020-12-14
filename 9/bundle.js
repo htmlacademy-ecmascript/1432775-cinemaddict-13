@@ -119,9 +119,7 @@ const EMOTIONS = [
 const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
-  RAITING: `raiting`,
-  UP: `up`,
-  DOWN: `down`
+  RAITING: `raiting`
 };
 
 
@@ -402,16 +400,13 @@ class Catalog {
     this._userIconView = null;
     this._siteMenuView = null;
     this._siteCatalog = null;
+    this._filmsSortedByDate = null;
     this._filmCardPresenterGroups = {
       catalog: {},
       raited: {},
       commented: {}
     };
-    this._sortType = {
-      current: _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DEFAULT,
-      date: _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].UP,
-      raiting: _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].UP
-    };
+    this._currentSortType = _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DEFAULT;
 
     this._FILMS_CARDS_NUMBER = 5;
     this._FILMS_STEP_LOAD = 5;
@@ -452,14 +447,8 @@ class Catalog {
     this._updatePresenters(film);
   }
 
-  _doForAllPresenterGroups(cb) {
-    this._presenterGroupNames.forEach((presenterGroup) => {
-      cb(presenterGroup);
-    });
-  }
-
   _updatePresenters(film) {
-    this._doForAllPresenterGroups((presenterGroup) => {
+    this._presenterGroupNames.forEach((presenterGroup) => {
       if (this._filmCardPresenterGroups[presenterGroup][film.id]) {
         this._filmCardPresenterGroups[presenterGroup][film.id].init(film);
       }
@@ -467,7 +456,7 @@ class Catalog {
   }
 
   _clearCatalog() {
-    this._doForAllPresenterGroups((presenterGroup) => {
+    this._presenterGroupNames.forEach((presenterGroup) => {
       Object.values(this._filmCardPresenterGroups[presenterGroup]).forEach((presenter) => presenter.destroy());
       this._filmCardPresenterGroups[presenterGroup] = {};
     });
@@ -476,7 +465,7 @@ class Catalog {
   }
 
   _closeAllPopups() {
-    this._doForAllPresenterGroups((presenterGroup) => {
+    this._presenterGroupNames.forEach((presenterGroup) => {
       Object.values(this._filmCardPresenterGroups[presenterGroup]).forEach((presenter) => presenter.closePopup());
     });
   }
@@ -488,34 +477,37 @@ class Catalog {
   _changeSort(type) {
     switch (type) {
       case _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].RAITING:
-        if (this._sortType.raiting === _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DOWN) {
-          this._films = this._filmsSortedByRaiting.reverse();
-          this._sortType.raiting = _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].UP;
-          break;
-        }
         this._films = this._filmsSortedByRaiting;
-        this._sortType.raiting = _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DOWN;
         break;
       case _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DEFAULT:
         this._films = this._sourcedFilms;
         break;
       case _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DATE:
-        if (this._sortType.date === _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DOWN) {
-          this._films = this._filmsSortedByDate.reverse();
-          this._sortType.date = _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].UP;
-          break;
+        if (!this._filmsSortedByDate) {
+          this._filmsSortedByDate = this._films.slice().sort((previous, current) => {
+            return current.date - previous.date;
+          });
         }
         this._films = this._filmsSortedByDate;
-        this._sortType.date = _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DOWN;
         break;
     }
-    this._sortType.current = type;
+    this._currentSortType = type;
   }
 
   _onSortTypeChange(type) {
-    if (this._sortType.current === _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DEFAULT && type === _const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].DEFAULT) {
+    if (this._currentSortType === type) {
       return;
     }
+    if (!this._sortButtons) {
+      this._sortButtons = Array.from(this._siteSortView.getElement().querySelectorAll(`.sort__button`));
+    }
+    this._sortButtons.forEach((sortButton) => {
+      if (sortButton.dataset.sortType === type) {
+        sortButton.classList.add(`sort__button--active`);
+        return;
+      }
+      sortButton.classList.remove(`sort__button--active`);
+    });
     this._changeSort(type);
     this._clearCatalog();
     this._renderCatalog();
@@ -574,12 +566,6 @@ class Catalog {
     Object(_util_js__WEBPACK_IMPORTED_MODULE_7__["render"])(this._siteCatalog, this._mostCommentedContainerView);
   }
 
-  _generateFilmsSortedByDate() {
-    this._filmsSortedByDate = this._films.slice().sort((previous, current) => {
-      return current.date - previous.date;
-    });
-  }
-
   _renderTopRaitedFilms() {
     const topRaitedFilmsContainer = this._siteCatalog.getElement().querySelector(`.films-list--extra .films-list__container`);
     this._filmsSortedByRaiting = this._films.slice().sort((previous, current) => {
@@ -623,7 +609,6 @@ class Catalog {
 
     this._renderTopRaitedFilms();
     this._renderMostCommentedFilms();
-    this._generateFilmsSortedByDate();
   }
 }
 
