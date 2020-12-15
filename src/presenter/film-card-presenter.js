@@ -1,6 +1,7 @@
 import {render, replace, remove, isKeyPressed} from '../util.js';
 import FilmCardView from '../view/film-card';
 import FilmPopupView from '../view/film-popup';
+import {CATEGORIES} from "../const.js";
 
 export default class CardPresenter {
   constructor(filmChangeCb, userChangeCb, closePopupsCb) {
@@ -24,6 +25,7 @@ export default class CardPresenter {
     this._onCardWatchlistClick = this._onCardWatchlistClick.bind(this);
     this._onCardToHistoryClick = this._onCardToHistoryClick.bind(this);
     this._onCardFavouritesClick = this._onCardFavouritesClick.bind(this);
+    this.cardUpdateHandler = this.cardUpdateHandler.bind(this);
   }
 
   init(film, container = this._container) {
@@ -68,7 +70,7 @@ export default class CardPresenter {
   _openPopup(evt) {
     evt.preventDefault();
     this._closePopups();
-    this._popup = new FilmPopupView(this._film);
+    this._popup = new FilmPopupView(this._film, this.cardUpdateHandler);
     render(this._pageBody, this._popup);
     this._popup.setCrossClickHandler(this._onPopupCrossClick);
     document.addEventListener(`keyup`, this._onPopupEscPress);
@@ -103,6 +105,20 @@ export default class CardPresenter {
           isInHistory: !this._film.isInHistory
         }
     ));
+  }
+
+  cardUpdateHandler(category) {
+    switch (category) {
+      case CATEGORIES.WATCHLIST:
+        this._onCardWatchlistClick();
+        break;
+      case CATEGORIES.HISTORY:
+        this._onCardToHistoryClick();
+        break;
+      case CATEGORIES.FAVOURITES:
+        this._onCardFavouritesClick();
+        break;
+    }
   }
 
   _onCardPosterClick(evt) {

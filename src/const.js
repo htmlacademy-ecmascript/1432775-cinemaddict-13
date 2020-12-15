@@ -5,8 +5,21 @@ export const EMOTIONS = [
   `angry`
 ];
 
+export const EMOTION_PICS = {
+  smile: `./images/emoji/smile.png`,
+  sleeping: `./images/emoji/sleeping.png`,
+  puke: `./images/emoji/puke.png`,
+  angry: `./images/emoji/angry.png`
+};
+
 export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
   RAITING: `raiting`
+};
+
+export const CATEGORIES = {
+  WATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVOURITES: `favourites`
 };
