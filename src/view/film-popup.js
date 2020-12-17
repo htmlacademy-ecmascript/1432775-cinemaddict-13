@@ -38,7 +38,7 @@ const createFilmPopup = (data) => {
 
   const smileImg = chosenSmile ? `<img src="${EMOTION_PICS[chosenSmile]}" width="55" height="55" alt="emoji-${chosenSmile}">` : ``;
 
-  const commentValue = userComment ? userComment : `Select reaction below and write comment here`;
+  const commentValue = userComment || `Select reaction below and write comment here`;
 
   const getFilmStatusClass = (property) => {
     return property ? ` checked` : ``;
@@ -197,7 +197,9 @@ export default class FilmPopup extends Smart {
     if (evt.target.tagName !== `INPUT`) {
       return;
     }
+    this._getScroll();
     this.updateData({chosenSmile: evt.target.value});
+    this._scrollToY();
   }
 
   _watchlistButtonClickHandler() {
@@ -231,5 +233,13 @@ export default class FilmPopup extends Smart {
   _restoreHandlers() {
     this._setHandlers();
     this.setCrossClickHandler(this._callback.crossClick);
+  }
+
+  _scrollToY() {
+    this.getElement().scroll(0, this._scroll);
+  }
+
+  _getScroll() {
+    this._scroll = this.getElement().scrollTop;
   }
 }
