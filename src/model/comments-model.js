@@ -1,10 +1,14 @@
 import Observer from './observer';
-
+import {ModelMethod} from "../const.js";
 
 export default class CommentsModel extends Observer {
   constructor() {
     super();
     this._comments = [];
+    this._observers = {
+      deleteComment: [],
+      addComment: []
+    };
   }
 
   setComments(comments) {
@@ -15,13 +19,13 @@ export default class CommentsModel extends Observer {
     return this._comments;
   }
 
-  deleteComment(updateType, commentToDelete) {
+  deleteComment(commentToDelete) {
     this._comments.filter((comment) => (comment.id !== commentToDelete.id));
-    this.notify(updateType);
+    this.notify(ModelMethod.DELETE_COMMENT);
   }
 
-  addComment(updateType, commentToAdd) {
+  addComment(commentToAdd) {
     this._comments.push(commentToAdd);
-    this.notify(updateType);
+    this.notify(ModelMethod.ADD_COMMENT);
   }
 }

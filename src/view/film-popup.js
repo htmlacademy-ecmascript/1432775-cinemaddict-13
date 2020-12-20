@@ -187,10 +187,6 @@ export default class FilmPopup extends Smart {
     return data;
   }
 
-  // _commentDeleteButtonHandler(evt) {
-
-  // }
-
   _crossClickHandler(evt) {
     evt.preventDefault();
     this._callback.crossClick(evt);

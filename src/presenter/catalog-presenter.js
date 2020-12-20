@@ -8,12 +8,13 @@ import MostCommentedContainerView from '../view/most-commented-container';
 import NoFilmsView from '../view/no-films';
 import {render, remove, filter} from '../util.js';
 import FilmCardPresenter from './film-card-presenter';
-import {SortType, UpdateType, UserAction} from "../const.js";
+import {SortType, UserAction, ModelMethod} from "../const.js";
 
 export default class Catalog {
-  constructor(filmsmodel, filterModel) {
+  constructor(filmsmodel, filterModel, commentsModel) {
     this._filmsModel = filmsmodel;
     this._filterModel = filterModel;
+    this._commentsModel = commentsModel;
 
     this._siteSortView = null;
     this._noFilmsView = null;
@@ -43,10 +44,12 @@ export default class Catalog {
     this._closeAllPopups = this._closeAllPopups.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onViewAction = this._onViewAction.bind(this);
-    this._onModelAction = this._onModelAction.bind(this);
 
-    this._filmsModel.addObserver(this._onModelAction);
-    this._filterModel.addObserver(this._onModelAction);
+    this._onfilmUpdate = this._onfilmUpdate.bind(this);
+    this._onFilterUpdate = this._onFilterUpdate.bind(this);
+
+    this._filmsModel.addObserver(ModelMethod.UPDATE_FILM, this._onfilmUpdate);
+    this._filterModel.addObserver(ModelMethod.UPDATE_FILTER, this._onFilterUpdate);
   }
 
   init(user, container) {
@@ -85,28 +88,21 @@ export default class Catalog {
     }
   }
 
-  _onViewAction(eventType, updateType, update) {
+  _onViewAction(eventType, update) {
     switch (eventType) {
       case UserAction.UPDATE_FILM_CATEGORY:
-        this._filmsModel.updateFilm(updateType, update);
+        this._filmsModel.updateFilm(update);
         break;
     }
   }
 
-  _onModelAction(updateType, update) {
-    switch (updateType) {
-      case UpdateType.PATCH:
-        this._updatePresenters(update);
-        break;
-      case UpdateType.MINOR:
-        this._clearCatalog();
-        this._renderCatalog();
-        break;
-      case UpdateType.MAJOR:
-        this._clearCatalog({resetRenderedFilms: true, resetSort: true});
-        this._renderCatalog();
-        break;
-    }
+  _onfilmUpdate(updatedFilm) {
+    this._updatePresenters(updatedFilm);
+  }
+
+  _onFilterUpdate() {
+    this._clearCatalog({resetRenderedFilms: true, resetSort: true});
+    this._renderCatalog();
   }
 
   _updatePresenters(film) {
@@ -178,7 +174,7 @@ export default class Catalog {
   }
 
   _renderCard(container, film, block) {
-    const filmPresenter = new FilmCardPresenter(this._onViewAction, this._onUserPropertyChange, this._closeAllPopups);
+    const filmPresenter = new FilmCardPresenter(this._filterModel, this._onViewAction, this._closeAllPopups);
     filmPresenter.init(film, container);
     switch (block) {
       case `raited`:

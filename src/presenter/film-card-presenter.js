@@ -1,16 +1,16 @@
 import {render, replace, remove, isKeyPressed} from '../util.js';
 import FilmCardView from '../view/film-card';
 import FilmPopupView from '../view/film-popup';
-import {CATEGORIES, UpdateType, UserAction} from "../const.js";
+import {CATEGORIES, UserAction} from "../const.js";
 
 export default class CardPresenter {
-  constructor(filmChangeCb, userChangeCb, closePopupsCb) {
+  constructor(filterModel, filmChangeCb, closePopupsCb) {
+    this._filterModel = filterModel;
 
     this._closePopups = closePopupsCb;
 
     this._card = null;
     this._filmChange = filmChangeCb;
-    this._userChange = userChangeCb;
     this._closePopups = closePopupsCb;
     this._pageBody = document.querySelector(`body`);
     this._popup = null;
@@ -78,7 +78,7 @@ export default class CardPresenter {
   }
 
   _onCardWatchlistClick() {
-    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, UpdateType.PATCH, Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
         {},
         this._film,
         {
@@ -88,7 +88,7 @@ export default class CardPresenter {
   }
 
   _onCardFavouritesClick() {
-    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, UpdateType.PATCH, Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
         {},
         this._film,
         {
@@ -98,7 +98,7 @@ export default class CardPresenter {
   }
 
   _onCardToHistoryClick() {
-    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, UpdateType.PATCH, Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
         {},
         this._film,
         {

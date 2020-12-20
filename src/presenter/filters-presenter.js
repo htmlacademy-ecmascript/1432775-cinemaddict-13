@@ -1,5 +1,5 @@
 import SiteMenuView from '../view/site-menu';
-import {UpdateType, UserAction} from "../const.js";
+import {UserAction, ModelMethod, CATEGORIES} from "../const.js";
 import {remove, render, replace} from '../util';
 
 export default class Filters {
@@ -7,20 +7,22 @@ export default class Filters {
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
     this._siteMenuView = null;
+    this._currentFilter = CATEGORIES.All;
 
-    this._onModelAction = this._onModelAction.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
+    this._changeFilter = this._changeFilter.bind(this);
+    this._onFilmChange = this._onFilmChange.bind(this);
 
-    this._filterModel.addObserver(this._onModelAction);
+    this._filterModel.addObserver(ModelMethod.UPDATE_FILTER, this._changeFilter);
+    this._filmsModel.addObserver(ModelMethod.UPDATE_FILM, this._onFilmChange);
   }
 
   init(container = this.container) {
     this.container = container;
-    this._currentFilter = this._filterModel.getFilter();
 
     const prevFiltersView = this._siteMenuView;
 
-    this._siteMenuView = new SiteMenuView(this._filmsModel.getFilms(), this._currentFilter);
+    this._siteMenuView = new SiteMenuView(this._filmsModel.getFilms(), this._filterModel.getFilter());
     this._siteMenuView.setFilterChangeHandler(this._onFilterChange);
 
     if (!prevFiltersView) {
@@ -32,25 +34,21 @@ export default class Filters {
     remove(prevFiltersView);
   }
 
-  _onViewAction(eventType, updateType, update) {
+  _onViewAction(eventType, update) {
     switch (eventType) {
       case UserAction.UPDATE_FILTER:
-        this._filterModel.updateFilter(updateType, update);
+        if (this._currentFilter === update) {
+          return;
+        }
+        this._filterModel.updateFilter(update);
     }
   }
 
-  _onModelAction(updateType, update) {
-    // switch (updateType) {
-    //   case UpdateType.PATCH:
-    //     this._changeFilter(update);
-    // }
+  _onFilmChange() {
     this.init();
   }
 
   _changeFilter(newFilter) {
-    if (this._currentFilter === newFilter) {
-      return;
-    }
 
     if (!this._filtersButtons) {
       this._filtersButtons = Array.from(this._siteMenuView.getElement().querySelectorAll(`.main-navigation__item`));
@@ -63,10 +61,12 @@ export default class Filters {
       }
       filterButton.classList.remove(`main-navigation__item--active`);
     });
+
+    this._currentFilter = newFilter;
   }
 
   _onFilterChange(filterType) {
-    this._onViewAction(UserAction.UPDATE_FILTER, UpdateType.MAJOR, filterType);
+    this._onViewAction(UserAction.UPDATE_FILTER, filterType);
   }
 }
 

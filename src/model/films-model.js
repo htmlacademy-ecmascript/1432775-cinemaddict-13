@@ -1,9 +1,13 @@
 import Observer from './observer';
+import {ModelMethod} from '../const';
 
 export default class FilmModel extends Observer {
   constructor() {
     super();
     this._films = [];
+    this._observers = {
+      updateFilm: []
+    };
   }
 
   setFilms(films) {
@@ -14,7 +18,7 @@ export default class FilmModel extends Observer {
     return this._films;
   }
 
-  updateFilm(updateType, elementToUpdate) {
+  updateFilm(elementToUpdate) {
     const index = this._films.findIndex((element) => element.id === elementToUpdate.id);
     if (index === -1) {
       throw new Error(`Film doesn't exist`);
@@ -22,6 +26,6 @@ export default class FilmModel extends Observer {
 
     this._films.splice(index, 1, elementToUpdate);
 
-    this.notify(updateType, elementToUpdate);
+    this.notify(ModelMethod.UPDATE_FILM, elementToUpdate);
   }
 }

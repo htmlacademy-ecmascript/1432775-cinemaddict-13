@@ -38,3 +38,10 @@ export const UpdateType = {
   MINOR: `MINOR`,
   MAJOR: `MAJOR`
 };
+
+export const ModelMethod = {
+  UPDATE_FILM: `updateFilm`,
+  UPDATE_FILTER: `updateFilter`,
+  ADD_COMMENT: `addComment`,
+  DELETE_COMMENT: `deleteComment`
+};
