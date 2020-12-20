@@ -1,7 +1,8 @@
 import Smart from './smart-view';
 import dayjs from "dayjs";
 import {EMOTIONS, EMOTION_PICS} from '../const.js';
-import {CATEGORIES} from "../const.js";
+import {CATEGORIES} from '../const.js';
+import {comments as commentsArr} from '../mock/comments';
 
 const createFilmPopup = (data) => {
   const {title, originalTitle, raiting, date, duration, genre, poster, description, comments, director, writers, actors, country, age, userComment, chosenSmile, isInWatchlist, isInHistory, isFavourite} = data;
@@ -10,8 +11,11 @@ const createFilmPopup = (data) => {
     return `<span class="film-details__genre">${genre[index]}</span>`;
   }).join(``);
 
-  const filmComments = comments.map((value, index) => {
-    const {text, author, date: commentDate, emotion} = comments[index];
+  const filmComments = comments.map((value) => {
+
+    const comment = commentsArr.find((recievedComment) => recievedComment.id === value);
+
+    const {text, author, date: commentDate, emotion} = comment;
 
     return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
@@ -182,6 +186,10 @@ export default class FilmPopup extends Smart {
     delete data.scroll;
     return data;
   }
+
+  // _commentDeleteButtonHandler(evt) {
+
+  // }
 
   _crossClickHandler(evt) {
     evt.preventDefault();

@@ -1,7 +1,7 @@
 import {render, replace, remove, isKeyPressed} from '../util.js';
 import FilmCardView from '../view/film-card';
 import FilmPopupView from '../view/film-popup';
-import {CATEGORIES} from "../const.js";
+import {CATEGORIES, UpdateType, UserAction} from "../const.js";
 
 export default class CardPresenter {
   constructor(filmChangeCb, userChangeCb, closePopupsCb) {
@@ -78,7 +78,7 @@ export default class CardPresenter {
   }
 
   _onCardWatchlistClick() {
-    this._filmChange(Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, UpdateType.PATCH, Object.assign(
         {},
         this._film,
         {
@@ -88,7 +88,7 @@ export default class CardPresenter {
   }
 
   _onCardFavouritesClick() {
-    this._filmChange(Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, UpdateType.PATCH, Object.assign(
         {},
         this._film,
         {
@@ -98,7 +98,7 @@ export default class CardPresenter {
   }
 
   _onCardToHistoryClick() {
-    this._filmChange(Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, UpdateType.PATCH, Object.assign(
         {},
         this._film,
         {

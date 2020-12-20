@@ -15,11 +15,26 @@ export const EMOTION_PICS = {
 export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
-  RAITING: `raiting`
+  RAITING: `raiting`,
+  COMMENTS: `comments`
 };
 
 export const CATEGORIES = {
+  All: `all`,
   WATCHLIST: `watchlist`,
   HISTORY: `history`,
   FAVOURITES: `favourites`
+};
+
+export const UserAction = {
+  DELETE_COMMENT: `DELETE_COMMENT`,
+  ADD_COMMENT: `ADD_COMMENT`,
+  UPDATE_FILM_CATEGORY: `UPDATE_FILM_CATEGORY`,
+  UPDATE_FILTER: `UPDATE_FILTER`
+};
+
+export const UpdateType = {
+  PATCH: `PATCH`,
+  MINOR: `MINOR`,
+  MAJOR: `MAJOR`
 };
