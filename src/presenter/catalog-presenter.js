@@ -174,7 +174,7 @@ export default class Catalog {
   }
 
   _renderCard(container, film, block) {
-    const filmPresenter = new FilmCardPresenter(this._filterModel, this._onViewAction, this._closeAllPopups);
+    const filmPresenter = new FilmCardPresenter(this._commentsModel, this._onViewAction, this._closeAllPopups);
     filmPresenter.init(film, container);
     switch (block) {
       case `raited`:

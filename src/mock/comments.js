@@ -2,7 +2,7 @@ import {getRandomInteger} from '../util.js';
 import {EMOTIONS} from '../const.js';
 import {generateId, DESCRIPTIONS} from './const';
 
-const COMMENTS_NUMBER = 20;
+const COMMENTS_NUMBER = 75;
 
 const generateComments = () => {
   const NAMES = [`Ann`, `Greg`, `Igor`, `Kate`];

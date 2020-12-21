@@ -20,12 +20,12 @@ export default class CommentsModel extends Observer {
   }
 
   deleteComment(commentToDelete) {
-    this._comments.filter((comment) => (comment.id !== commentToDelete.id));
-    this.notify(ModelMethod.DELETE_COMMENT);
+    this._comments = this._comments.filter((comment) => (comment.id !== commentToDelete.id));
+    this.notify(ModelMethod.DELETE_COMMENT, commentToDelete);
   }
 
   addComment(commentToAdd) {
     this._comments.push(commentToAdd);
-    this.notify(ModelMethod.ADD_COMMENT);
+    this.notify(ModelMethod.ADD_COMMENT, commentToAdd);
   }
 }
