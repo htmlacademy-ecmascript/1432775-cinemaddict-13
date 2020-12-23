@@ -1,4 +1,5 @@
 import AbstractView from './view/abstract-view';
+import {CATEGORIES} from './const';
 
 export const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -48,6 +49,10 @@ export const replace = (newElement, oldElement) => {
 };
 
 export const remove = (element) => {
+  if (element === null) {
+    return;
+  }
+
   if (!(element instanceof AbstractView)) {
     throw new Error(`Can remove view components only`);
   }
@@ -61,17 +66,6 @@ export const isKeyPressed = (evt, cb, keyName) => {
   }
 };
 
-export const updateElement = (elementsArr, elementToUpdate) => {
-  const index = elementsArr.findIndex((element) => element.id === elementToUpdate.id);
-  if (index === -1) {
-    return elementsArr;
-  }
-
-  return [
-    ...elementsArr.slice(0, index), elementToUpdate, ...elementsArr.slice(index + 1)
-  ];
-};
-
 export const updateUserPropertyArray = (idArr, filmId) => {
   const index = idArr.findIndex((id) => id === filmId);
 
@@ -82,4 +76,11 @@ export const updateUserPropertyArray = (idArr, filmId) => {
 
   idArr.splice(index, 1);
   return idArr;
+};
+
+export const filter = {
+  [CATEGORIES.All]: (films) => films,
+  [CATEGORIES.WATCHLIST]: (films) => films.filter((film) => (film.isInWatchlist)),
+  [CATEGORIES.HISTORY]: (films) => films.filter((film) => (film.isInHistory)),
+  [CATEGORIES.FAVOURITES]: (films) => films.filter((film) => (film.isFavourite))
 };

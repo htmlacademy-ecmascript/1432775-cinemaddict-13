@@ -1,7 +1,7 @@
 import Smart from './smart-view';
 import dayjs from "dayjs";
 import {EMOTIONS, EMOTION_PICS} from '../const.js';
-import {CATEGORIES} from "../const.js";
+import {CATEGORIES} from '../const.js';
 
 const createFilmPopup = (data) => {
   const {title, originalTitle, raiting, date, duration, genre, poster, description, comments, director, writers, actors, country, age, userComment, chosenSmile, isInWatchlist, isInHistory, isFavourite} = data;
@@ -10,23 +10,6 @@ const createFilmPopup = (data) => {
     return `<span class="film-details__genre">${genre[index]}</span>`;
   }).join(``);
 
-  const filmComments = comments.map((value, index) => {
-    const {text, author, date: commentDate, emotion} = comments[index];
-
-    return `<li class="film-details__comment">
-    <span class="film-details__comment-emoji">
-      <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
-    </span>
-    <div>
-  <p class="film-details__comment-text">${text}</p>
-      <p class="film-details__comment-info">
-        <span class="film-details__comment-author">${author}</span>
-        <span class="film-details__comment-day">${dayjs(commentDate).format(`YYYY/MM/DD HH:mm`)}</span>
-        <button class="film-details__comment-delete">Delete</button>
-      </p>
-    </div>
-  </li>`;
-  }).join(``);
 
   const emojiRadio = EMOTIONS.map((value, index) => {
     const emotion = EMOTIONS[index];
@@ -38,7 +21,7 @@ const createFilmPopup = (data) => {
 
   const smileImg = chosenSmile ? `<img src="${EMOTION_PICS[chosenSmile]}" width="55" height="55" alt="emoji-${chosenSmile}">` : ``;
 
-  const commentValue = userComment || `Select reaction below and write comment here`;
+  const commentValue = userComment || ``;
 
   const getFilmStatusClass = (property) => {
     return property ? ` checked` : ``;
@@ -123,7 +106,7 @@ const createFilmPopup = (data) => {
       <section class="film-details__comments-wrap">
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
-        <ul class="film-details__comments-list">${filmComments}</ul>
+        <ul class="film-details__comments-list"></ul>
 
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label">
@@ -131,7 +114,7 @@ const createFilmPopup = (data) => {
           </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="${commentValue}" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentValue}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -145,9 +128,10 @@ const createFilmPopup = (data) => {
 };
 
 export default class FilmPopup extends Smart {
-  constructor(film, cardUpdateHandler) {
+  constructor(film, cardUpdateHandler, renderCommentsCb) {
     super();
     this._cardUpdateHandler = cardUpdateHandler;
+    this._renderComments = renderCommentsCb;
     this._data = this._parseFilmTodata(film);
     this._crossClickHandler = this._crossClickHandler.bind(this);
     this._commentChangeHandler = this._commentChangeHandler.bind(this);
@@ -175,6 +159,11 @@ export default class FilmPopup extends Smart {
     );
   }
 
+  changeComment(sentComments) {
+    this._getScroll();
+    this.updateData({comments: sentComments});
+  }
+
   _parseDataToFilm(data) {
     data = Object.assign({}, data);
     delete data.userComment;
@@ -194,12 +183,13 @@ export default class FilmPopup extends Smart {
   }
 
   _emojiInputClickHandler(evt) {
-    if (evt.target.tagName !== `INPUT`) {
+    if (evt.target.tagName !== `INPUT` || evt.target.value === this._data.chosenSmile) {
       return;
     }
     this._getScroll();
     this.updateData({chosenSmile: evt.target.value});
-    this._scrollToY();
+    this._renderComments();
+    this.scrollToY();
   }
 
   _watchlistButtonClickHandler() {
@@ -235,11 +225,28 @@ export default class FilmPopup extends Smart {
     this.setCrossClickHandler(this._callback.crossClick);
   }
 
-  _scrollToY() {
+  scrollToY() {
     this.getElement().scroll(0, this._scroll);
   }
 
   _getScroll() {
     this._scroll = this.getElement().scrollTop;
+  }
+
+  getNewCommentData() {
+    if (!this._data.chosenSmile || !this._data.userComment) {
+      return null;
+    }
+    const emotion = this._data.chosenSmile;
+    const text = this._data.userComment;
+    return {
+      text,
+      emotion
+    };
+  }
+
+  clearInput() {
+    this._data.chosenSmile = null;
+    this._data.userComment = null;
   }
 }

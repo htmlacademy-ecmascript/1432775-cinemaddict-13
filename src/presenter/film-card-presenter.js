@@ -1,16 +1,20 @@
 import {render, replace, remove, isKeyPressed} from '../util.js';
 import FilmCardView from '../view/film-card';
 import FilmPopupView from '../view/film-popup';
-import {CATEGORIES} from "../const.js";
+import {CATEGORIES, UserAction, ModelMethod} from "../const.js";
+import CommentPresenter from './comment-presenter';
+import {generateId} from '../mock/const';
 
 export default class CardPresenter {
-  constructor(filmChangeCb, userChangeCb, closePopupsCb) {
+  constructor(commentsModel, filmChangeCb, closePopupsCb) {
+    this._commentsModel = commentsModel;
+
+    this._commentPresenters = {};
 
     this._closePopups = closePopupsCb;
 
     this._card = null;
     this._filmChange = filmChangeCb;
-    this._userChange = userChangeCb;
     this._closePopups = closePopupsCb;
     this._pageBody = document.querySelector(`body`);
     this._popup = null;
@@ -26,6 +30,14 @@ export default class CardPresenter {
     this._onCardToHistoryClick = this._onCardToHistoryClick.bind(this);
     this._onCardFavouritesClick = this._onCardFavouritesClick.bind(this);
     this.cardUpdateHandler = this.cardUpdateHandler.bind(this);
+    this.onCommentDelete = this.onCommentDelete.bind(this);
+    this.onViewAction = this.onViewAction.bind(this);
+    this._onCommentAdd = this._onCommentAdd.bind(this);
+    this._renderCommentsToPopup = this._renderCommentsToPopup.bind(this);
+    this.addComment = this.addComment.bind(this);
+
+    this._commentsModel.addObserver(ModelMethod.DELETE_COMMENT, this.onCommentDelete);
+    this._commentsModel.addObserver(ModelMethod.ADD_COMMENT, this.addComment);
   }
 
   init(film, container = this._container) {
@@ -59,26 +71,123 @@ export default class CardPresenter {
     remove(this._card);
   }
 
+  onViewAction(eventType, update) {
+    switch (eventType) {
+      case UserAction.DELETE_COMMENT:
+        this._commentsModel.deleteComment(update);
+        break;
+      case UserAction.ADD_COMMENT:
+        this._commentsModel.addComment(update);
+        break;
+    }
+  }
+
+  onCommentDelete(deletedComment) {
+    if (this._commentPresenters[deletedComment.id]) {
+      this._commentPresenters[deletedComment.id].destroy();
+      delete this._commentPresenters[deletedComment.id];
+
+      this._popup.changeComment(Object.keys(this._commentPresenters));
+      Object.values(this._commentPresenters).forEach((commentPresenter) => commentPresenter.init(this._popup.getElement().querySelector(`.film-details__comments-list`)));
+
+      this._popup.scrollToY();
+
+      this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
+          {},
+          this._film,
+          {
+            comments: Object.keys(this._commentPresenters)
+          }
+      ));
+    }
+  }
+
+  _onCommentAdd(evt) {
+    if (evt.keyCode === 13 && evt.ctrlKey) {
+      if (this._popup.getNewCommentData() === null) {
+        return;
+      }
+      const comment = Object.assign({},
+          this._popup.getNewCommentData(),
+          {
+            id: generateId(),
+            date: new Date(),
+            author: `local user`
+          });
+      this._popup.clearInput();
+      this.onViewAction(UserAction.ADD_COMMENT, comment);
+    }
+  }
+
+  addComment(comment) {
+    if (this._popup) {
+
+      const commentPresenter = new CommentPresenter(this.onViewAction, comment);
+      this._commentPresenters[comment.id] = commentPresenter;
+
+      this._popup.changeComment(Object.keys(this._commentPresenters));
+
+      this._renderCommentsToPopup();
+      commentPresenter.init(this._popup.getElement().querySelector(`.film-details__comments-list`));
+
+      this._popup.scrollToY();
+
+
+      this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
+          {},
+          this._film,
+          {
+            comments: Object.keys(this._commentPresenters)
+          }
+      ));
+
+    }
+  }
+
+  _renderCommentsToPopup() {
+    const comments = this._commentsModel.getComments();
+
+    this._film.comments.forEach((commentId) => {
+      const comment = comments.find((recievedComment) => (String(recievedComment.id) === String(commentId)));
+
+      const commentPresenter = new CommentPresenter(this.onViewAction, comment);
+      commentPresenter.init(this._popup.getElement().querySelector(`.film-details__comments-list`));
+      this._commentPresenters[comment.id] = commentPresenter;
+    });
+  }
+
+
   closePopup() {
     if (this._popup) {
       remove(this._popup);
+      document.removeEventListener(`keydown`, this._onCommentAdd);
       document.removeEventListener(`keyup`, this._onPopupEscPress);
       this._pageBody.classList.remove(`hide-overflow`);
+
+      Object.values(this._commentPresenters).forEach((presenter) => {
+        presenter.destroy();
+      });
+
+      this._commentPresenters = {};
     }
   }
 
   _openPopup(evt) {
     evt.preventDefault();
     this._closePopups();
-    this._popup = new FilmPopupView(this._film, this.cardUpdateHandler);
+    this._popup = new FilmPopupView(this._film, this.cardUpdateHandler, this._renderCommentsToPopup);
+
+    this._renderCommentsToPopup();
+
     render(this._pageBody, this._popup);
     this._popup.setCrossClickHandler(this._onPopupCrossClick);
+    document.addEventListener(`keydown`, this._onCommentAdd);
     document.addEventListener(`keyup`, this._onPopupEscPress);
     this._pageBody.classList.add(`hide-overflow`);
   }
 
   _onCardWatchlistClick() {
-    this._filmChange(Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
         {},
         this._film,
         {
@@ -88,7 +197,7 @@ export default class CardPresenter {
   }
 
   _onCardFavouritesClick() {
-    this._filmChange(Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
         {},
         this._film,
         {
@@ -98,7 +207,7 @@ export default class CardPresenter {
   }
 
   _onCardToHistoryClick() {
-    this._filmChange(Object.assign(
+    this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
         {},
         this._film,
         {
