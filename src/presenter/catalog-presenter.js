@@ -1,10 +1,10 @@
 import UserIconView from '../view/user-icon';
-import SiteMenuView from '../view/site-menu';
 import SiteSortView from '../view/site-sort';
 import SiteCatalogView from '../view/films-catalog';
 import ShowMoreButtonView from '../view/show-more-button';
 import TopRaitedContainerView from '../view/top-raited-container';
 import MostCommentedContainerView from '../view/most-commented-container';
+import LoadingView from '../view/loading';
 import NoFilmsView from '../view/no-films';
 import {render, remove, filter} from '../util.js';
 import FilmCardPresenter from './film-card-presenter';
@@ -26,6 +26,7 @@ export default class Catalog {
     this._showMoreButton = new ShowMoreButtonView();
     this._topRaitedContainerView = new TopRaitedContainerView();
     this._mostCommentedContainerView = new MostCommentedContainerView();
+    this._loadingView = new LoadingView();
 
     this._filmCardPresenterGroups = {
       catalog: {},
@@ -33,6 +34,7 @@ export default class Catalog {
       commented: {}
     };
     this._currentSortType = SortType.DEFAULT;
+    this._isLoading = true;
 
     this._FILMS_CARDS_NUMBER = 5;
     this._FILMS_STEP_LOAD = 5;
@@ -44,11 +46,13 @@ export default class Catalog {
     this._closeAllPopups = this._closeAllPopups.bind(this);
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
     this._onViewAction = this._onViewAction.bind(this);
-
     this._onfilmUpdate = this._onfilmUpdate.bind(this);
     this._onFilterUpdate = this._onFilterUpdate.bind(this);
+    this._onFilmsLoad = this._onFilmsLoad.bind(this);
 
     this._filmsModel.addObserver(ModelMethod.UPDATE_FILM, this._onfilmUpdate);
+    this._filmsModel.addObserver(ModelMethod.SET_FILMS, this._onFilmsLoad);
+
     this._filterModel.addObserver(ModelMethod.UPDATE_FILTER, this._onFilterUpdate);
   }
 
@@ -56,7 +60,6 @@ export default class Catalog {
     this._presenterGroupNames = Object.keys(this._filmCardPresenterGroups);
     this._user = user;
     this._userIconView = new UserIconView(this._user.avatar, this._user.raiting);
-    this._siteMenuView = new SiteMenuView(this._getFilms());
     this._siteMain = container;
 
     render(this._siteMain.parentElement.querySelector(`.header`), this._userIconView);
@@ -96,6 +99,12 @@ export default class Catalog {
     }
   }
 
+  _onFilmsLoad() {
+    this._isLoading = false;
+    remove(this._loadingView);
+    this._renderCatalog();
+  }
+
   _onfilmUpdate(updatedFilm) {
     this._updatePresenters(updatedFilm);
   }
@@ -122,6 +131,7 @@ export default class Catalog {
     remove(this._siteSortView);
     remove(this._noFilmsView);
     remove(this._showMoreButton);
+    remove(this._loadingView);
 
     if (resetRenderedFilms) {
       this._renderedFilms = this._FILMS_CARDS_NUMBER;
@@ -236,7 +246,16 @@ export default class Catalog {
     }
   }
 
+  _renderLoading() {
+    render(this._siteMain, this._loadingView);
+  }
+
   _renderCatalog() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     if (!(this._siteCatalog)) {
       this._siteCatalog = new SiteCatalogView();
     }

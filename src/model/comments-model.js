@@ -2,21 +2,25 @@ import Observer from './observer';
 import {ModelMethod} from "../const.js";
 
 export default class CommentsModel extends Observer {
-  constructor() {
+  constructor(api) {
     super();
-    this._comments = [];
+    this._api = api;
+    this._comments = {};
     this._observers = {
       deleteComment: [],
       addComment: []
     };
   }
 
-  setComments(comments) {
-    this._comments = comments;
-  }
-
-  getComments() {
-    return this._comments;
+  getComments(filmId) {
+    if (this._comments[filmId]) {
+      return new Promise((resolve) => resolve(this._comments[filmId]));
+    }
+    return this._api.getComments(filmId)
+    .then((comments) => {
+      this._comments[filmId] = comments;
+    })
+    .then(() => this._comments[filmId]);
   }
 
   deleteComment(commentToDelete) {
@@ -27,5 +31,15 @@ export default class CommentsModel extends Observer {
   addComment(commentToAdd) {
     this._comments.push(commentToAdd);
     this.notify(ModelMethod.ADD_COMMENT, commentToAdd);
+  }
+
+  getErrorComment() {
+    return {
+      id: `!!!`,
+      author: `site`,
+      date: new Date(),
+      emotion: `angry`,
+      text: `Не удалось загрузить комментарии.`
+    };
   }
 }
