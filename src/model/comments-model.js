@@ -5,7 +5,7 @@ export default class CommentsModel extends Observer {
   constructor(api) {
     super();
     this._api = api;
-    this._comments = {};
+    this._comments = [];
     this._observers = {
       deleteComment: [],
       addComment: []
@@ -13,14 +13,11 @@ export default class CommentsModel extends Observer {
   }
 
   getComments(filmId) {
-    if (this._comments[filmId]) {
-      return new Promise((resolve) => resolve(this._comments[filmId]));
-    }
     return this._api.getComments(filmId)
     .then((comments) => {
-      this._comments[filmId] = comments;
-    })
-    .then(() => this._comments[filmId]);
+      this._comments = comments;
+      return this._comments;
+    });
   }
 
   deleteComment(commentToDelete) {

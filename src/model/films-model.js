@@ -25,10 +25,6 @@ export default class FilmModel extends Observer {
   updateFilm(elementToUpdate) {
     this._api.updateFilm(elementToUpdate).then((updatedFilm) => {
       const index = this._films.findIndex((element) => element.id === updatedFilm.id);
-      if (index === -1) {
-        throw new Error(`Film doesn't exist`);
-      }
-
       this._films.splice(index, 1, updatedFilm);
 
       this.notify(ModelMethod.UPDATE_FILM, updatedFilm);
