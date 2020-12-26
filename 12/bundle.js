@@ -587,40 +587,36 @@ class Api {
   }
 
   _adaptFilmToClient(film) {
-    const adaptedFilm = Object.assign(
-        {},
-        film,
-        {
-          title: film.film_info.title,
-          originalTitle: film.film_info.alternative_title,
-          raiting: film.film_info.total_rating,
-          poster: film.film_info.poster,
-          age: film.film_info.age_rating,
-          director: film.film_info.director,
-          writers: film.film_info.writers,
-          actors: film.film_info.actors,
-          date: new Date(film.film_info.release.date),
-          country: film.film_info.release.release_country,
-          duration: film.film_info.runtime,
-          genre: film.film_info.genre,
-          description: film.film_info.description,
-          isInWatchlist: film.user_details.watchlist,
-          isInHistory: film.user_details.already_watched,
-          watchingDate: film.user_details.watching_date,
-          isFavourite: film.user_details.favorite
-        }
-    );
-
-    delete adaptedFilm.film_info;
-    delete adaptedFilm.user_details;
+    const adaptedFilm = {
+      id: film.id,
+      comments: film.comments,
+      title: film.film_info.title,
+      originalTitle: film.film_info.alternative_title,
+      raiting: film.film_info.total_rating,
+      poster: film.film_info.poster,
+      age: film.film_info.age_rating,
+      director: film.film_info.director,
+      writers: film.film_info.writers,
+      actors: film.film_info.actors,
+      date: new Date(film.film_info.release.date),
+      country: film.film_info.release.release_country,
+      duration: film.film_info.runtime,
+      genre: film.film_info.genre,
+      description: film.film_info.description,
+      isInWatchlist: film.user_details.watchlist,
+      isInHistory: film.user_details.already_watched,
+      watchingDate: film.user_details.watching_date,
+      isFavourite: film.user_details.favorite
+    };
 
     return adaptedFilm;
   }
 
   _adaptFilmToServer(film) {
-    const adaptedFilm = Object.assign({},
-        film,
+    const adaptedFilm =
         {
+          "id": film.id,
+          "comments": film.comments,
           "film_info": {
             "title": film.title,
             "alternative_title": film.originalTitle,
@@ -644,25 +640,7 @@ class Api {
             "watching_date": film.watchingDate,
             "favorite": film.isFavourite,
           }
-        });
-
-    delete adaptedFilm.poster;
-    delete adaptedFilm.title;
-    delete adaptedFilm.originalTitle;
-    delete adaptedFilm.raiting;
-    delete adaptedFilm.date;
-    delete adaptedFilm.duration;
-    delete adaptedFilm.genre;
-    delete adaptedFilm.description;
-    delete adaptedFilm.director;
-    delete adaptedFilm.writers;
-    delete adaptedFilm.actors;
-    delete adaptedFilm.country;
-    delete adaptedFilm.age;
-    delete adaptedFilm.isInWatchlist;
-    delete adaptedFilm.isInHistory;
-    delete adaptedFilm.isFavourite;
-    delete adaptedFilm.watchingDate;
+        };
 
     return adaptedFilm;
   }
@@ -897,7 +875,7 @@ class CommentsModel extends _observer__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(api) {
     super();
     this._api = api;
-    this._comments = {};
+    this._comments = [];
     this._observers = {
       deleteComment: [],
       addComment: []
@@ -905,14 +883,11 @@ class CommentsModel extends _observer__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   getComments(filmId) {
-    if (this._comments[filmId]) {
-      return new Promise((resolve) => resolve(this._comments[filmId]));
-    }
     return this._api.getComments(filmId)
     .then((comments) => {
-      this._comments[filmId] = comments;
-    })
-    .then(() => this._comments[filmId]);
+      this._comments = comments;
+      return this._comments;
+    });
   }
 
   deleteComment(commentToDelete) {
@@ -978,10 +953,6 @@ class FilmModel extends _observer__WEBPACK_IMPORTED_MODULE_0__["default"] {
   updateFilm(elementToUpdate) {
     this._api.updateFilm(elementToUpdate).then((updatedFilm) => {
       const index = this._films.findIndex((element) => element.id === updatedFilm.id);
-      if (index === -1) {
-        throw new Error(`Film doesn't exist`);
-      }
-
       this._films.splice(index, 1, updatedFilm);
 
       this.notify(_const__WEBPACK_IMPORTED_MODULE_1__["ModelMethod"].UPDATE_FILM, updatedFilm);
