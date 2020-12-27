@@ -84,3 +84,13 @@ export const filter = {
   [CATEGORIES.HISTORY]: (films) => films.filter((film) => (film.isInHistory)),
   [CATEGORIES.FAVOURITES]: (films) => films.filter((film) => (film.isFavourite))
 };
+
+export const getDuration = (duration) => {
+  const hours = duration / 60;
+  const minutes = duration % 60;
+  if (hours < 1) {
+    return `${minutes}m`;
+  } else {
+    return `${Math.floor(hours)}h ${minutes}m`;
+  }
+};

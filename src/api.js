@@ -1,6 +1,8 @@
 const Method = {
   GET: `GET`,
-  PUT: `PUT`
+  PUT: `PUT`,
+  POST: `POST`,
+  DELETE: `DELETE`
 };
 
 const SuccessStatusRange = {
@@ -64,6 +66,24 @@ export default class Api {
     return this._load({url: `comments/${filmId}`})
     .then(this._toJSON)
     .then((comments) => comments.map(this._adaptCommentToClient));
+  }
+
+  addComment(comment, filmId) {
+    return this._load({
+      url: `comments/${filmId}`,
+      method: Method.POST,
+      body: JSON.stringify(this._adaptCommentToServer(comment)),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+    .then(this._toJSON)
+    .then((response) => response.comments.map(this._adaptCommentToClient));
+  }
+
+  deleteComment(filmId) {
+    return this._load({
+      url: `comments/${filmId}`,
+      method: Method.DELETE
+    });
   }
 
   _adaptFilmToClient(film) {

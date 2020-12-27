@@ -30,6 +30,7 @@ export const UserAction = {
   DELETE_COMMENT: `DELETE_COMMENT`,
   ADD_COMMENT: `ADD_COMMENT`,
   UPDATE_FILM_CATEGORY: `UPDATE_FILM_CATEGORY`,
+  UPDATE_FILM_CATEGORY_WITH_RERENDER: `UPDATE_FILM_CATEGORY_WITH_RERENDER`,
   UPDATE_FILTER: `UPDATE_FILTER`
 };
 
@@ -41,8 +42,15 @@ export const UpdateType = {
 
 export const ModelMethod = {
   UPDATE_FILM: `updateFilm`,
+  UPDATE_FILM_WITH_RERENDER: `updateFilmWithRerender`,
   UPDATE_FILTER: `updateFilter`,
   ADD_COMMENT: `addComment`,
   DELETE_COMMENT: `deleteComment`,
   SET_FILMS: `setFilms`
+};
+
+export const UserRaiting = {
+  NOVICE: `novice`,
+  FAN: `fan`,
+  MOVIE_BUFF: `movie buff`
 };
