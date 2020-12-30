@@ -15,6 +15,7 @@ export default class Filters {
 
     this._filterModel.addObserver(ModelMethod.UPDATE_FILTER, this._changeFilter);
     this._filmsModel.addObserver(ModelMethod.UPDATE_FILM, this._onFilmChange);
+    this._filmsModel.addObserver(ModelMethod.UPDATE_FILM_WITH_RERENDER, this._onFilmChange);
     this._filmsModel.addObserver(ModelMethod.SET_FILMS, this._onFilmChange);
   }
 
@@ -47,10 +48,10 @@ export default class Filters {
 
   _onFilmChange() {
     this.init();
+    this._filtersButtons = null;
   }
 
   _changeFilter(newFilter) {
-
     if (!this._filtersButtons) {
       this._filtersButtons = Array.from(this._siteMenuView.getElement().querySelectorAll(`.main-navigation__item`));
     }
