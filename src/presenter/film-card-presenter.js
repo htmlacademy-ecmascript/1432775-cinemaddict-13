@@ -94,7 +94,7 @@ export default class CardPresenter {
 
       this._popup.scrollToY();
 
-      this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
+      this._filmChange(UserAction.REPLACE_FILM, Object.assign(
           {},
           this._film,
           {
@@ -130,8 +130,11 @@ export default class CardPresenter {
     this._popup.shake();
   }
 
-  addComment(comments) {
+  addComment(response) {
     if (this._popup) {
+      const comments = response.comments;
+      const film = response.movie;
+
       this._commentPresenters = {};
 
       comments.forEach((comment) => {
@@ -146,13 +149,7 @@ export default class CardPresenter {
 
       this._popup.scrollToY();
 
-      this._filmChange(UserAction.UPDATE_FILM_CATEGORY, Object.assign(
-          {},
-          this._film,
-          {
-            comments: Object.keys(this._commentPresenters)
-          }
-      ));
+      this._filmChange(UserAction.REPLACE_FILM, film);
     }
   }
 

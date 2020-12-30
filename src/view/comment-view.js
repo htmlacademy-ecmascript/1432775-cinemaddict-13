@@ -5,7 +5,7 @@ import he from "he";
 const createCommentTemplate = (comment) => {
   const {text, author, date: commentDate, emotion} = comment;
 
-  const getHumanDate = (date) => {
+  const getFormattedTime = (date) => {
     const difference = (+new Date() - +new Date(date)) / 60000;
     const hoursDiff = difference / 60;
     const daysDiff = hoursDiff / 24;
@@ -45,7 +45,7 @@ const createCommentTemplate = (comment) => {
 <p class="film-details__comment-text">${he.encode(text)}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${he.encode(author)}</span>
-      <span class="film-details__comment-day">${getHumanDate(commentDate)}</span>
+      <span class="film-details__comment-day">${getFormattedTime(commentDate)}</span>
       <button class="film-details__comment-delete">Delete</button>
     </p>
   </div>

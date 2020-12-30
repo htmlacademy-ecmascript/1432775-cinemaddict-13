@@ -92,6 +92,9 @@ export default class Catalog {
       case UserAction.UPDATE_FILM_CATEGORY:
         this._filmsModel.updateFilm(update);
         break;
+      case UserAction.REPLACE_FILM:
+        this._filmsModel.replaceFilm(update);
+        break;
       case UserAction.UPDATE_FILM_CATEGORY_WITH_RERENDER:
         this._filmsModel.updateFilm(update, false)
         .then(() => {

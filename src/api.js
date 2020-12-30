@@ -76,7 +76,12 @@ export default class Api {
       headers: new Headers({"Content-Type": `application/json`})
     })
     .then(this._toJSON)
-    .then((response) => response.comments.map(this._adaptCommentToClient));
+    .then((response) => {
+      return {
+        comments: response.comments.map(this._adaptCommentToClient),
+        movie: this._adaptFilmToClient(response.movie)
+      };
+    });
   }
 
   deleteComment(filmId) {

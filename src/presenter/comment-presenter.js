@@ -34,11 +34,11 @@ export default class Comment {
   }
 
   _deleteComment() {
-    this.disableDeleteButton();
+    this.changeDeleteButtonState();
     this._commentsChange(UserAction.DELETE_COMMENT, this._comment);
   }
 
-  disableDeleteButton() {
+  changeDeleteButtonState() {
     const deleteButton = this._commentView.getElement().querySelector(`.film-details__comment-delete`);
     deleteButton.textContent = this._isCommentDisabled ? DeleteButtonText.COMMON : DeleteButtonText.DISABLED;
     deleteButton.disabled = !this._isCommentDisabled;

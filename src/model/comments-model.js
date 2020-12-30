@@ -33,9 +33,9 @@ export default class CommentsModel extends Observer {
 
   addComment(commentToAdd, filmId) {
     return this._api.addComment(commentToAdd, filmId)
-    .then((comments) => {
-      this._comments = comments;
-      this.notify(ModelMethod.ADD_COMMENT, this._comments);
+    .then((response) => {
+      this._comments = response.comments;
+      this.notify(ModelMethod.ADD_COMMENT, response);
     });
   }
 

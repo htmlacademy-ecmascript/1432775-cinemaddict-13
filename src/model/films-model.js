@@ -23,16 +23,17 @@ export default class FilmModel extends Observer {
     return this._films;
   }
 
+  replaceFilm(filmToUpdate, isNotificationNeeded = true) {
+    const index = this._films.findIndex((element) => element.id === filmToUpdate.id);
+    this._films.splice(index, 1, filmToUpdate);
+
+    const modelMethod = isNotificationNeeded ? ModelMethod.UPDATE_FILM : ModelMethod.UPDATE_FILM_WITH_RERENDER;
+    this.notify(modelMethod, filmToUpdate);
+  }
+
   updateFilm(elementToUpdate, isNotificationNeeded = true) {
     return this._api.updateFilm(elementToUpdate).then((updatedFilm) => {
-      const index = this._films.findIndex((element) => element.id === updatedFilm.id);
-      this._films.splice(index, 1, updatedFilm);
-
-      if (isNotificationNeeded) {
-        this.notify(ModelMethod.UPDATE_FILM, updatedFilm);
-      } else {
-        this.notify(ModelMethod.UPDATE_FILM_WITH_RERENDER, updatedFilm);
-      }
+      this.replaceFilm(updatedFilm, isNotificationNeeded);
     });
   }
 }
