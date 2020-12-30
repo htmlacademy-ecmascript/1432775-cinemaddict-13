@@ -596,7 +596,12 @@ class Api {
       headers: new Headers({"Content-Type": `application/json`})
     })
     .then(this._toJSON)
-    .then((response) => response.comments.map(this._adaptCommentToClient));
+    .then((response) => {
+      return {
+        comments: response.comments.map(this._adaptCommentToClient),
+        movie: this._adaptFilmToClient(response.movie)
+      };
+    });
   }
 
   deleteComment(filmId) {
@@ -743,6 +748,7 @@ const UserAction = {
   DELETE_COMMENT: `DELETE_COMMENT`,
   ADD_COMMENT: `ADD_COMMENT`,
   UPDATE_FILM_CATEGORY: `UPDATE_FILM_CATEGORY`,
+  REPLACE_FILM: `REPLACE_FILM`,
   UPDATE_FILM_CATEGORY_WITH_RERENDER: `UPDATE_FILM_CATEGORY_WITH_RERENDER`,
   UPDATE_FILTER: `UPDATE_FILTER`
 };
@@ -907,9 +913,9 @@ class CommentsModel extends _observer__WEBPACK_IMPORTED_MODULE_0__["default"] {
 
   addComment(commentToAdd, filmId) {
     return this._api.addComment(commentToAdd, filmId)
-    .then((comments) => {
-      this._comments = comments;
-      this.notify(_const_js__WEBPACK_IMPORTED_MODULE_1__["ModelMethod"].ADD_COMMENT, this._comments);
+    .then((response) => {
+      this._comments = response.comments;
+      this.notify(_const_js__WEBPACK_IMPORTED_MODULE_1__["ModelMethod"].ADD_COMMENT, response);
     });
   }
 
@@ -964,16 +970,17 @@ class FilmModel extends _observer__WEBPACK_IMPORTED_MODULE_0__["default"] {
     return this._films;
   }
 
+  replaceFilm(filmToUpdate, isNotificationNeeded = true) {
+    const index = this._films.findIndex((element) => element.id === filmToUpdate.id);
+    this._films.splice(index, 1, filmToUpdate);
+
+    const modelMethod = isNotificationNeeded ? _const__WEBPACK_IMPORTED_MODULE_1__["ModelMethod"].UPDATE_FILM : _const__WEBPACK_IMPORTED_MODULE_1__["ModelMethod"].UPDATE_FILM_WITH_RERENDER;
+    this.notify(modelMethod, filmToUpdate);
+  }
+
   updateFilm(elementToUpdate, isNotificationNeeded = true) {
     return this._api.updateFilm(elementToUpdate).then((updatedFilm) => {
-      const index = this._films.findIndex((element) => element.id === updatedFilm.id);
-      this._films.splice(index, 1, updatedFilm);
-
-      if (isNotificationNeeded) {
-        this.notify(_const__WEBPACK_IMPORTED_MODULE_1__["ModelMethod"].UPDATE_FILM, updatedFilm);
-      } else {
-        this.notify(_const__WEBPACK_IMPORTED_MODULE_1__["ModelMethod"].UPDATE_FILM_WITH_RERENDER, updatedFilm);
-      }
+      this.replaceFilm(updatedFilm, isNotificationNeeded);
     });
   }
 }
@@ -1163,6 +1170,9 @@ class Catalog {
     switch (eventType) {
       case _const_js__WEBPACK_IMPORTED_MODULE_9__["UserAction"].UPDATE_FILM_CATEGORY:
         this._filmsModel.updateFilm(update);
+        break;
+      case _const_js__WEBPACK_IMPORTED_MODULE_9__["UserAction"].REPLACE_FILM:
+        this._filmsModel.replaceFilm(update);
         break;
       case _const_js__WEBPACK_IMPORTED_MODULE_9__["UserAction"].UPDATE_FILM_CATEGORY_WITH_RERENDER:
         this._filmsModel.updateFilm(update, false)
@@ -1415,11 +1425,11 @@ class Comment {
   }
 
   _deleteComment() {
-    this.disableDeleteButton();
+    this.changeDeleteButtonState();
     this._commentsChange(_const_js__WEBPACK_IMPORTED_MODULE_1__["UserAction"].DELETE_COMMENT, this._comment);
   }
 
-  disableDeleteButton() {
+  changeDeleteButtonState() {
     const deleteButton = this._commentView.getElement().querySelector(`.film-details__comment-delete`);
     deleteButton.textContent = this._isCommentDisabled ? DeleteButtonText.COMMON : DeleteButtonText.DISABLED;
     deleteButton.disabled = !this._isCommentDisabled;
@@ -1549,7 +1559,7 @@ class CardPresenter {
 
       this._popup.scrollToY();
 
-      this._filmChange(_const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY, Object.assign(
+      this._filmChange(_const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].REPLACE_FILM, Object.assign(
           {},
           this._film,
           {
@@ -1585,8 +1595,11 @@ class CardPresenter {
     this._popup.shake();
   }
 
-  addComment(comments) {
+  addComment(response) {
     if (this._popup) {
+      const comments = response.comments;
+      const film = response.movie;
+
       this._commentPresenters = {};
 
       comments.forEach((comment) => {
@@ -1601,13 +1614,7 @@ class CardPresenter {
 
       this._popup.scrollToY();
 
-      this._filmChange(_const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY, Object.assign(
-          {},
-          this._film,
-          {
-            comments: Object.keys(this._commentPresenters)
-          }
-      ));
+      this._filmChange(_const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].REPLACE_FILM, film);
     }
   }
 
@@ -2136,7 +2143,7 @@ __webpack_require__.r(__webpack_exports__);
 const createCommentTemplate = (comment) => {
   const {text, author, date: commentDate, emotion} = comment;
 
-  const getHumanDate = (date) => {
+  const getFormattedTime = (date) => {
     const difference = (+new Date() - +new Date(date)) / 60000;
     const hoursDiff = difference / 60;
     const daysDiff = hoursDiff / 24;
@@ -2176,7 +2183,7 @@ const createCommentTemplate = (comment) => {
 <p class="film-details__comment-text">${he__WEBPACK_IMPORTED_MODULE_2___default.a.encode(text)}</p>
     <p class="film-details__comment-info">
       <span class="film-details__comment-author">${he__WEBPACK_IMPORTED_MODULE_2___default.a.encode(author)}</span>
-      <span class="film-details__comment-day">${getHumanDate(commentDate)}</span>
+      <span class="film-details__comment-day">${getFormattedTime(commentDate)}</span>
       <button class="film-details__comment-delete">Delete</button>
     </p>
   </div>
