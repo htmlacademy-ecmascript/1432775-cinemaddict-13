@@ -75,11 +75,6 @@ const onFetchSend = (evt) => {
             return response;
           }
 
-          // const clone = response.clone();
-
-          // caches.open(CACHE_NAME)
-          // .then((cache) => cache.put(request, clone));
-
           return response;
         });
       })
