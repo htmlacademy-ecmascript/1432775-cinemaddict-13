@@ -208,7 +208,8 @@ export default class CardPresenter {
         {},
         this._film,
         {
-          isInWatchlist: !this._film.isInWatchlist
+          isInWatchlist: !this._film.isInWatchlist,
+          isSynced: false
         }
     ));
   }
@@ -219,7 +220,8 @@ export default class CardPresenter {
         {},
         this._film,
         {
-          isFavourite: !this._film.isFavourite
+          isFavourite: !this._film.isFavourite,
+          isSynced: false
         }
     ));
   }
@@ -230,7 +232,8 @@ export default class CardPresenter {
         {},
         this._film,
         {
-          isInHistory: !this._film.isInHistory
+          isInHistory: !this._film.isInHistory,
+          isSynced: false
         }
     ));
   }

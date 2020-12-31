@@ -94,3 +94,7 @@ export const getDuration = (duration) => {
     return `${Math.floor(hours)}h ${minutes}m`;
   }
 };
+
+export const isOnline = () => {
+  return window.navigator.onLine;
+};
