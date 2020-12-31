@@ -9,6 +9,7 @@ import Api from './api/api';
 
 import Provider from './api/provider';
 import Store from './api/store';
+import {renderToast} from './util';
 
 const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict/`;
 const AUTHORIZATION = `Basic asedtj13680sdgh4yjg2q`;
@@ -60,4 +61,5 @@ window.addEventListener(`online`, () => {
 
 window.addEventListener(`offline`, () => {
   document.title += ` [offline]`;
+  renderToast(`Lost connection`);
 });

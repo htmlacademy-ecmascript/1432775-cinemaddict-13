@@ -105,7 +105,7 @@ export default class CardPresenter {
   }
 
   _onCommentDeleteError(commentId) {
-    this._commentPresenters[commentId].disableDeleteButton();
+    this._commentPresenters[commentId].changeDeleteButtonState();
     this._commentPresenters[commentId].shake();
   }
 

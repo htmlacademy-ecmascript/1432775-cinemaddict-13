@@ -143,7 +143,7 @@ export default class Api {
             "writers": film.writers,
             "actors": film.actors,
             "release": {
-              "date": film.date.toISOString(),
+              "date": new Date(film.date).toISOString(),
               "release_country": film.country
             },
             "runtime": film.duration,
