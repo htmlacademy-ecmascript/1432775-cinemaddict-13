@@ -43,7 +43,7 @@ export default class Provider {
 
   sync() {
     const updatedFilms = Object.values(this._store.getItems()).filter((film) => !film.isSynced).map(this._api.adaptFilmToServer);
-    if (updatedFilms.length > 0) {
+    if (updatedFilms.length) {
       return isOnline() ? this._api.sync(updatedFilms) : Promise.reject(new Error(`No connection to sync`));
     }
     return Promise.resolve(`Sync not needed`);
