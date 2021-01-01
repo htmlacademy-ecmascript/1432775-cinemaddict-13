@@ -94,3 +94,21 @@ export const getDuration = (duration) => {
     return `${Math.floor(hours)}h ${minutes}m`;
   }
 };
+
+export const isOnline = () => {
+  return window.navigator.onLine;
+};
+
+const SHOW_TIME = 4000;
+
+export const renderToast = (message) => {
+  const toast = document.createElement(`div`);
+  toast.textContent = message;
+  toast.classList.add(`toast`);
+
+  document.body.append(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, SHOW_TIME);
+};

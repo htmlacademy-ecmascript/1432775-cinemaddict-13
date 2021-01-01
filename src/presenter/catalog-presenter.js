@@ -55,9 +55,8 @@ export default class Catalog {
     this._filterModel.addObserver(ModelMethod.UPDATE_FILTER, this._onFilterUpdate);
   }
 
-  init(user, container) {
+  init(container) {
     this._presenterGroupNames = Object.keys(this._filmCardPresenterGroups);
-    this._user = user;
     this._siteMain = container;
 
     this._renderCatalog();

@@ -48,18 +48,18 @@ export default class Api {
   getFilms() {
     return this._load({url: `movies`})
     .then(this._toJSON)
-    .then((films) => films.map(this._adaptFilmToClient));
+    .then((films) => films.map(this.adaptFilmToClient));
   }
 
   updateFilm(film) {
     return this._load({
       url: `movies/${film.id}`,
       method: Method.PUT,
-      body: JSON.stringify(this._adaptFilmToServer(film)),
+      body: JSON.stringify(this.adaptFilmToServer(film)),
       headers: new Headers({"Content-Type": `application/json`})
     })
     .then(this._toJSON)
-    .then(this._adaptFilmToClient);
+    .then(this.adaptFilmToClient);
   }
 
   getComments(filmId) {
@@ -76,7 +76,12 @@ export default class Api {
       headers: new Headers({"Content-Type": `application/json`})
     })
     .then(this._toJSON)
-    .then((response) => response.comments.map(this._adaptCommentToClient));
+    .then((response) => {
+      return {
+        comments: response.comments.map(this._adaptCommentToClient),
+        movie: this.adaptFilmToClient(response.movie)
+      };
+    });
   }
 
   deleteComment(filmId) {
@@ -86,7 +91,17 @@ export default class Api {
     });
   }
 
-  _adaptFilmToClient(film) {
+  sync(data) {
+    return this._load({
+      url: `movies/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+    .then(this._toJSON);
+  }
+
+  adaptFilmToClient(film) {
     const adaptedFilm = {
       id: film.id,
       comments: film.comments,
@@ -106,13 +121,14 @@ export default class Api {
       isInWatchlist: film.user_details.watchlist,
       isInHistory: film.user_details.already_watched,
       watchingDate: film.user_details.watching_date,
-      isFavourite: film.user_details.favorite
+      isFavourite: film.user_details.favorite,
+      isSynced: true
     };
 
     return adaptedFilm;
   }
 
-  _adaptFilmToServer(film) {
+  adaptFilmToServer(film) {
     const adaptedFilm =
         {
           "id": film.id,
@@ -127,7 +143,7 @@ export default class Api {
             "writers": film.writers,
             "actors": film.actors,
             "release": {
-              "date": film.date.toISOString(),
+              "date": new Date(film.date).toISOString(),
               "release_country": film.country
             },
             "runtime": film.duration,
