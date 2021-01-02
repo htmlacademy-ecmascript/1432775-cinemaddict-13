@@ -136,6 +136,7 @@ export default class FilmPopup extends Smart {
     this._renderComments = renderCommentsCb;
     this._data = this._parseFilmTodata(film);
     this._isCommentFormDisabled = false;
+    this._isOnlineListening = false;
 
     this._crossClickHandler = this._crossClickHandler.bind(this);
     this._commentChangeHandler = this._commentChangeHandler.bind(this);
@@ -143,6 +144,7 @@ export default class FilmPopup extends Smart {
     this._watchlistButtonClickHandler = this._watchlistButtonClickHandler.bind(this);
     this._historyButtonClickHandler = this._historyButtonClickHandler.bind(this);
     this._favouritesButtonClickHandler = this._favouritesButtonClickHandler.bind(this);
+    this.shake = this.shake.bind(this);
 
     this._setHandlers();
   }
@@ -182,6 +184,14 @@ export default class FilmPopup extends Smart {
   }
 
   _commentChangeHandler(evt) {
+    if (evt.target.value.length && !this._isOnlineListening) {
+      this._isOnlineListening = true;
+      window.addEventListener(`offline`, this.shake);
+    }
+    if (evt.target.value.length === 0 && this._isOnlineListening) {
+      this._isOnlineListening = false;
+      window.removeEventListener(`offline`, this.shake);
+    }
     evt.preventDefault();
     this.updateData({userComment: evt.target.value}, true);
   }
