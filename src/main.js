@@ -6,10 +6,11 @@ import FilmsModel from './model/films-model';
 import FilterModel from './model/filter-model';
 import CommentsModel from './model/comments-model';
 import Api from './api/api';
-
 import Provider from './api/provider';
 import Store from './api/store';
-import {renderToast} from './util';
+import {remove, render, renderToast} from './util';
+import Stats from './view/stats';
+import {SiteState} from './const';
 
 const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict/`;
 const AUTHORIZATION = `Basic asedtj13680sdgh4yjg2q`;
@@ -17,6 +18,21 @@ const AUTHORIZATION = `Basic asedtj13680sdgh4yjg2q`;
 const STORE_PREFIX = `cinemaaddict-localstorage`;
 const STORE_VER = `v1`;
 const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
+
+let stats;
+const changeSiteState = (action) => {
+  switch (action) {
+    case SiteState.TO_MOVIES:
+      catalogPresenter.init();
+      remove(stats);
+      break;
+    case SiteState.TO_STATS:
+      catalogPresenter.destroy();
+      stats = new Stats(filmsModel.getFilms());
+      render(siteMain, stats);
+      break;
+  }
+};
 
 const baseApi = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(STORE_NAME, window.localStorage);
@@ -33,7 +49,7 @@ const footerStats = siteFooter.querySelector(`.footer__statistics`);
 const userPresenter = new UserPresenter(filmsModel);
 userPresenter.init(header);
 
-const filtersPresenter = new FiltersPresenters(filmsModel, filterModel);
+const filtersPresenter = new FiltersPresenters(filmsModel, filterModel, changeSiteState);
 filtersPresenter.init(siteMain);
 
 const catalogPresenter = new CatalogPresenter(filmsModel, filterModel, commentsModel);
@@ -41,6 +57,7 @@ catalogPresenter.init(siteMain);
 
 const filmsCounterPresenter = new FilmsCounterPresenter(filmsModel);
 filmsCounterPresenter.init(footerStats);
+
 
 api.getFilms()
 .then((films) => {

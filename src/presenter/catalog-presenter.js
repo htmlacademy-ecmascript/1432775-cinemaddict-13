@@ -48,18 +48,32 @@ export default class Catalog {
     this._onfilmUpdate = this._onfilmUpdate.bind(this);
     this._onFilterUpdate = this._onFilterUpdate.bind(this);
     this._onFilmsLoad = this._onFilmsLoad.bind(this);
+  }
+
+  init(container = this._container) {
+    this._container = container;
+
+    this._presenterGroupNames = Object.keys(this._filmCardPresenterGroups);
+    this._siteMain = container;
 
     this._filmsModel.addObserver(ModelMethod.UPDATE_FILM, this._onfilmUpdate);
     this._filmsModel.addObserver(ModelMethod.SET_FILMS, this._onFilmsLoad);
 
     this._filterModel.addObserver(ModelMethod.UPDATE_FILTER, this._onFilterUpdate);
-  }
-
-  init(container) {
-    this._presenterGroupNames = Object.keys(this._filmCardPresenterGroups);
-    this._siteMain = container;
 
     this._renderCatalog();
+  }
+
+  destroy() {
+    this._clearCatalog({resetRenderedFilms: true, resetSort: true});
+
+    remove(this._topRaitedContainerView);
+    remove(this._mostCommentedContainerView);
+    remove(this._siteCatalog);
+
+    this._filmsModel.removeObserver(ModelMethod.UPDATE_FILM, this._onfilmUpdate);
+    this._filmsModel.removeObserver(ModelMethod.SET_FILMS, this._onFilmsLoad);
+    this._filterModel.removeObserver(ModelMethod.UPDATE_FILTER, this._onFilterUpdate);
   }
 
   _getFilms(sortType) {

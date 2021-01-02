@@ -55,3 +55,16 @@ export const UserRaiting = {
   FAN: `fan`,
   MOVIE_BUFF: `movie buff`
 };
+
+export const SiteState = {
+  TO_MOVIES: `TO_MOVIES`,
+  TO_STATS: `TO_STATS`
+};
+
+export const StatsPeriod = {
+  ALL: `all-time`,
+  TODAY: `day`,
+  WEEK: `week`,
+  MONTH: `month`,
+  YEAR: `year`
+};

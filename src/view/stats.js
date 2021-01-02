@@ -1,6 +1,58 @@
-import AbstractView from './abstract-view';
+import {StatsPeriod} from '../const';
+import Smart from './smart-view';
+import dayjs from "dayjs";
 
-const createStats = () => {
+const createStats = (data) => {
+  let chosenPeriodTime;
+  if (data.period === StatsPeriod.ALL) {
+    chosenPeriodTime = -Infinity;
+  } else {
+    chosenPeriodTime = dayjs().subtract(1, `${data.period}`);
+  }
+
+  let filmsWatched = 0;
+  let totalMinutesDuration = 0;
+  const geners = new Map();
+
+  data.films.forEach((film) => {
+    if (film.isInHistory && +new Date(film.watchingDate) > chosenPeriodTime) {
+      filmsWatched++;
+      totalMinutesDuration += film.duration;
+      film.genre.forEach((currentGenre) => {
+        if (geners.has(currentGenre)) {
+          geners.set(currentGenre, geners.get(currentGenre) + 1);
+          return;
+        }
+        geners.set(currentGenre, 1);
+      });
+    }
+  });
+
+  const getTopGenre = () => {
+    let topGenre = {
+      genre: ``,
+      watched: 0
+    };
+
+    geners.forEach((watchedNumber, genre) => {
+      if (watchedNumber >= topGenre.watched) {
+        topGenre.genre = genre;
+        topGenre.watched = watchedNumber;
+      }
+    });
+
+    return topGenre.genre;
+  };
+
+  const totalDuration = {
+    hours: Math.floor(totalMinutesDuration / 60),
+    minutes: totalMinutesDuration % 60
+  };
+
+  const getCheckedState = (statsPeriod) => {
+    return (data.period === statsPeriod) ? ` checked` : ``;
+  };
+
   return `<section class="statistic">
   <p class="statistic__rank">
     Your rank
@@ -11,34 +63,34 @@ const createStats = () => {
   <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
     <p class="statistic__filters-description">Show stats:</p>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="all-time" checked>
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-all-time" value="${StatsPeriod.ALL}"${getCheckedState(StatsPeriod.ALL)}>
     <label for="statistic-all-time" class="statistic__filters-label">All time</label>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="today">
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-today" value="${StatsPeriod.TODAY}"${getCheckedState(StatsPeriod.TODAY)}>
     <label for="statistic-today" class="statistic__filters-label">Today</label>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="week">
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-week" value="${StatsPeriod.WEEK}"${getCheckedState(StatsPeriod.WEEK)}>
     <label for="statistic-week" class="statistic__filters-label">Week</label>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="month">
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-month" value="${StatsPeriod.MONTH}"${getCheckedState(StatsPeriod.MONTH)}>
     <label for="statistic-month" class="statistic__filters-label">Month</label>
 
-    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="year">
+    <input type="radio" class="statistic__filters-input visually-hidden" name="statistic-filter" id="statistic-year" value="${StatsPeriod.YEAR}"${getCheckedState(StatsPeriod.YEAR)}>
     <label for="statistic-year" class="statistic__filters-label">Year</label>
   </form>
 
   <ul class="statistic__text-list">
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">You watched</h4>
-      <p class="statistic__item-text">22 <span class="statistic__item-description">movies</span></p>
+      <p class="statistic__item-text">${filmsWatched} <span class="statistic__item-description">movies</span></p>
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Total duration</h4>
-      <p class="statistic__item-text">130 <span class="statistic__item-description">h</span> 22 <span class="statistic__item-description">m</span></p>
+      <p class="statistic__item-text">${totalDuration.hours} <span class="statistic__item-description">h</span> ${totalDuration.minutes} <span class="statistic__item-description">m</span></p>
     </li>
     <li class="statistic__text-item">
       <h4 class="statistic__item-title">Top genre</h4>
-      <p class="statistic__item-text">Sci-Fi</p>
+      <p class="statistic__item-text">${getTopGenre()}</p>
     </li>
   </ul>
 
@@ -49,13 +101,35 @@ const createStats = () => {
 </section>`;
 };
 
-export default class Stats extends AbstractView {
-  constructor(user) {
+export default class Stats extends Smart {
+  constructor(films) {
     super();
-    this.user = user;
+    this._data = {
+      films,
+      period: StatsPeriod.ALL
+    };
+
+    this._onPeriodButtonClick = this._onPeriodButtonClick.bind(this);
+
+    this._setHandlers();
   }
 
   getTemplate() {
-    return createStats(this.user);
+    return createStats(this._data);
+  }
+
+  _onPeriodButtonClick(evt) {
+    if (evt.target.tagName !== `INPUT`) {
+      return;
+    }
+    this.updateData({period: evt.target.value});
+  }
+
+  _setHandlers() {
+    this.getElement().querySelector(`.statistic__filters`).addEventListener(`click`, this._onPeriodButtonClick);
+  }
+
+  _restoreHandlers() {
+    this._setHandlers();
   }
 }
