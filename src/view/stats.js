@@ -1,7 +1,79 @@
 import {StatsPeriod} from '../const';
 import Smart from './smart-view';
 import dayjs from "dayjs";
+import Chart from "chart.js";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+const renderChart = (statisticCtx) => {
+  const sortedGeners = [...geners].sort((previous, current) => current[1] - previous[1]);
+  geners.clear();
+
+  const generNames = sortedGeners.map((value) => value[0]);
+  const generValues = sortedGeners.map((value) => value[1]);
+
+  const BAR_HEIGHT = 40;
+
+  statisticCtx.height = BAR_HEIGHT * sortedGeners.length;
+
+  return new Chart(statisticCtx, {
+    plugins: [ChartDataLabels],
+    type: `horizontalBar`,
+    data: {
+      labels: generNames,
+      datasets: [{
+        data: generValues,
+        backgroundColor: `#ffe800`,
+        hoverBackgroundColor: `#ffe800`,
+        anchor: `start`,
+        barThickness: 24
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          font: {
+            size: 20
+          },
+          color: `#ffffff`,
+          anchor: `start`,
+          align: `start`,
+          offset: 40,
+        }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            fontColor: `#ffffff`,
+            padding: 100,
+            fontSize: 20
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+        }],
+        xAxes: [{
+          ticks: {
+            display: false,
+            beginAtZero: true
+          },
+          gridLines: {
+            display: false,
+            drawBorder: false
+          },
+        }],
+      },
+      legend: {
+        display: false
+      },
+      tooltips: {
+        enabled: false
+      }
+    }
+  });
+};
+
+const geners = new Map();
 const createStats = (data) => {
   let chosenPeriodTime;
   if (data.period === StatsPeriod.ALL) {
@@ -12,7 +84,6 @@ const createStats = (data) => {
 
   let filmsWatched = 0;
   let totalMinutesDuration = 0;
-  const geners = new Map();
 
   data.films.forEach((film) => {
     if (film.isInHistory && +new Date(film.watchingDate) > chosenPeriodTime) {
@@ -35,7 +106,7 @@ const createStats = (data) => {
     };
 
     geners.forEach((watchedNumber, genre) => {
-      if (watchedNumber >= topGenre.watched) {
+      if (watchedNumber > topGenre.watched) {
         topGenre.genre = genre;
         topGenre.watched = watchedNumber;
       }
@@ -109,9 +180,11 @@ export default class Stats extends Smart {
       userRaiting,
       period: StatsPeriod.ALL
     };
+    this._chart = null;
 
     this._onPeriodButtonClick = this._onPeriodButtonClick.bind(this);
 
+    this._setChart();
     this._setHandlers();
   }
 
@@ -119,11 +192,19 @@ export default class Stats extends Smart {
     return createStats(this._data);
   }
 
+  removeElement() {
+    super.removeElement();
+    if (this._chart !== null) {
+      this._chart = null;
+    }
+  }
+
   _onPeriodButtonClick(evt) {
     if (evt.target.tagName !== `INPUT`) {
       return;
     }
     this.updateData({period: evt.target.value});
+    this._setChart();
   }
 
   _setHandlers() {
@@ -132,5 +213,13 @@ export default class Stats extends Smart {
 
   _restoreHandlers() {
     this._setHandlers();
+  }
+
+  _setChart() {
+    if (this._chart !== null) {
+      this._chart = null;
+    }
+    const statisticCtx = this.getElement().querySelector(`.statistic__chart`);
+    this._chart = renderChart(statisticCtx);
   }
 }
