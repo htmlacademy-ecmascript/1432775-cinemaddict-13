@@ -47,7 +47,8 @@ export const ModelMethod = {
   UPDATE_FILTER: `updateFilter`,
   ADD_COMMENT: `addComment`,
   DELETE_COMMENT: `deleteComment`,
-  SET_FILMS: `setFilms`
+  SET_FILMS: `setFilms`,
+  UPDATE_USER_RAITING: `updateRaiting`
 };
 
 export const UserRaiting = {

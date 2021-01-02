@@ -11,6 +11,7 @@ import Store from './api/store';
 import {remove, render, renderToast} from './util';
 import Stats from './view/stats';
 import {SiteState} from './const';
+import UserModel from './model/user-model';
 
 const END_POINT = `https://13.ecmascript.pages.academy/cinemaddict/`;
 const AUTHORIZATION = `Basic asedtj13680sdgh4yjg2q`;
@@ -28,7 +29,7 @@ const changeSiteState = (action) => {
       break;
     case SiteState.TO_STATS:
       catalogPresenter.destroy();
-      stats = new Stats(filmsModel.getFilms());
+      stats = new Stats(filmsModel.getFilms(), userModel.getRaiting());
       render(siteMain, stats);
       break;
   }
@@ -41,12 +42,13 @@ const api = new Provider(baseApi, store);
 const filmsModel = new FilmsModel(api);
 const filterModel = new FilterModel();
 const commentsModel = new CommentsModel(api);
+const userModel = new UserModel(filmsModel);
 const siteMain = document.querySelector(`.main`);
 const header = document.querySelector(`.header`);
 const siteFooter = document.querySelector(`.footer`);
 const footerStats = siteFooter.querySelector(`.footer__statistics`);
 
-const userPresenter = new UserPresenter(filmsModel);
+const userPresenter = new UserPresenter(userModel);
 userPresenter.init(header);
 
 const filtersPresenter = new FiltersPresenters(filmsModel, filterModel, changeSiteState);
