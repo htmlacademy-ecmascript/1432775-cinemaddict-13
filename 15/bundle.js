@@ -40311,7 +40311,7 @@ class FilmModel extends _observer__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   getFilms() {
-    return this._films;
+    return this._films.slice();
   }
 
   replaceFilm(filmToUpdate, isNotificationNeeded = true) {
@@ -40449,13 +40449,7 @@ class UserModel extends _observer__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   _getWatchedFilmsNumber(films) {
-    let watched = 0;
-    films.forEach((film) => {
-      if (film.isInHistory) {
-        watched++;
-      }
-    });
-    return watched;
+    return films.reduce((acc, currentFilm) => acc + currentFilm.isInHistory, 0);
   }
 
   _getUserRaiting(watchedFilms) {
@@ -42505,11 +42499,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const renderChart = (statisticCtx) => {
-  const sortedGeners = [...geners].sort((previous, current) => current[1] - previous[1]);
-  geners.clear();
+  const sortedGeners = [...genres].sort((previous, current) => current[1] - previous[1]);
+  genres.clear();
 
-  const generNames = sortedGeners.map((value) => value[0]);
-  const generValues = sortedGeners.map((value) => value[1]);
+  const genreNames = sortedGeners.map((value) => value[0]);
+  const genreValues = sortedGeners.map((value) => value[1]);
 
   const BAR_HEIGHT = 40;
 
@@ -42519,9 +42513,9 @@ const renderChart = (statisticCtx) => {
     plugins: [chartjs_plugin_datalabels__WEBPACK_IMPORTED_MODULE_4___default.a],
     type: `horizontalBar`,
     data: {
-      labels: generNames,
+      labels: genreNames,
       datasets: [{
-        data: generValues,
+        data: genreValues,
         backgroundColor: `#ffe800`,
         hoverBackgroundColor: `#ffe800`,
         anchor: `start`,
@@ -42573,7 +42567,7 @@ const renderChart = (statisticCtx) => {
   });
 };
 
-const geners = new Map();
+const genres = new Map();
 const createStats = (data) => {
   let chosenPeriodTime;
   if (data.period === _const__WEBPACK_IMPORTED_MODULE_0__["StatsPeriod"].ALL) {
@@ -42590,11 +42584,11 @@ const createStats = (data) => {
       filmsWatched++;
       totalMinutesDuration += film.duration;
       film.genre.forEach((currentGenre) => {
-        if (geners.has(currentGenre)) {
-          geners.set(currentGenre, geners.get(currentGenre) + 1);
+        if (genres.has(currentGenre)) {
+          genres.set(currentGenre, genres.get(currentGenre) + 1);
           return;
         }
-        geners.set(currentGenre, 1);
+        genres.set(currentGenre, 1);
       });
     }
   });
@@ -42605,7 +42599,7 @@ const createStats = (data) => {
       watched: 0
     };
 
-    geners.forEach((watchedNumber, genre) => {
+    genres.forEach((watchedNumber, genre) => {
       if (watchedNumber > topGenre.watched) {
         topGenre.genre = genre;
         topGenre.watched = watchedNumber;
