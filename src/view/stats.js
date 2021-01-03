@@ -5,11 +5,11 @@ import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 const renderChart = (statisticCtx) => {
-  const sortedGeners = [...geners].sort((previous, current) => current[1] - previous[1]);
-  geners.clear();
+  const sortedGeners = [...genres].sort((previous, current) => current[1] - previous[1]);
+  genres.clear();
 
-  const generNames = sortedGeners.map((value) => value[0]);
-  const generValues = sortedGeners.map((value) => value[1]);
+  const genreNames = sortedGeners.map((value) => value[0]);
+  const genreValues = sortedGeners.map((value) => value[1]);
 
   const BAR_HEIGHT = 40;
 
@@ -19,9 +19,9 @@ const renderChart = (statisticCtx) => {
     plugins: [ChartDataLabels],
     type: `horizontalBar`,
     data: {
-      labels: generNames,
+      labels: genreNames,
       datasets: [{
-        data: generValues,
+        data: genreValues,
         backgroundColor: `#ffe800`,
         hoverBackgroundColor: `#ffe800`,
         anchor: `start`,
@@ -73,7 +73,7 @@ const renderChart = (statisticCtx) => {
   });
 };
 
-const geners = new Map();
+const genres = new Map();
 const createStats = (data) => {
   let chosenPeriodTime;
   if (data.period === StatsPeriod.ALL) {
@@ -90,11 +90,11 @@ const createStats = (data) => {
       filmsWatched++;
       totalMinutesDuration += film.duration;
       film.genre.forEach((currentGenre) => {
-        if (geners.has(currentGenre)) {
-          geners.set(currentGenre, geners.get(currentGenre) + 1);
+        if (genres.has(currentGenre)) {
+          genres.set(currentGenre, genres.get(currentGenre) + 1);
           return;
         }
-        geners.set(currentGenre, 1);
+        genres.set(currentGenre, 1);
       });
     }
   });
@@ -105,7 +105,7 @@ const createStats = (data) => {
       watched: 0
     };
 
-    geners.forEach((watchedNumber, genre) => {
+    genres.forEach((watchedNumber, genre) => {
       if (watchedNumber > topGenre.watched) {
         topGenre.genre = genre;
         topGenre.watched = watchedNumber;
