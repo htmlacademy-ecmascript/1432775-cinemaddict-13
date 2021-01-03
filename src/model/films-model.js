@@ -20,7 +20,7 @@ export default class FilmModel extends Observer {
   }
 
   getFilms() {
-    return this._films;
+    return this._films.slice();
   }
 
   replaceFilm(filmToUpdate, isNotificationNeeded = true) {
