@@ -5,13 +5,6 @@ export const EMOTIONS = [
   `angry`
 ];
 
-export const EMOTION_PICS = {
-  smile: `./images/emoji/smile.png`,
-  sleeping: `./images/emoji/sleeping.png`,
-  puke: `./images/emoji/puke.png`,
-  angry: `./images/emoji/angry.png`
-};
-
 export const SortType = {
   DEFAULT: `default`,
   DATE: `date`,
@@ -19,7 +12,7 @@ export const SortType = {
   COMMENTS: `comments`
 };
 
-export const CATEGORIES = {
+export const Category = {
   All: `all`,
   WATCHLIST: `watchlist`,
   HISTORY: `history`,
@@ -47,11 +40,35 @@ export const ModelMethod = {
   UPDATE_FILTER: `updateFilter`,
   ADD_COMMENT: `addComment`,
   DELETE_COMMENT: `deleteComment`,
-  SET_FILMS: `setFilms`
+  SET_FILMS: `setFilms`,
+  UPDATE_USER_RAITING: `updateRaiting`
 };
 
 export const UserRaiting = {
   NOVICE: `novice`,
   FAN: `fan`,
   MOVIE_BUFF: `movie buff`
+};
+
+export const SiteState = {
+  TO_MOVIES: `TO_MOVIES`,
+  TO_STATS: `TO_STATS`
+};
+
+export const StatsPeriod = {
+  ALL: `all-time`,
+  TODAY: `day`,
+  WEEK: `week`,
+  MONTH: `month`,
+  YEAR: `year`
+};
+
+export const FilmCardContainer = {
+  RAITED: `raited`,
+  COMMENTED: `commented`
+};
+
+export const RenderPosition = {
+  BEFOREEND: `beforeend`,
+  AFTERBEGIN: `afterbegin`
 };

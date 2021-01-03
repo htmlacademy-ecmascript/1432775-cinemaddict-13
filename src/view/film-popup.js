@@ -1,6 +1,6 @@
 import Smart from './smart-view';
 import dayjs from "dayjs";
-import {EMOTIONS, EMOTION_PICS, CATEGORIES} from '../const.js';
+import {EMOTIONS, Category} from '../const.js';
 import {getDuration} from '../util';
 
 const createFilmPopup = (data) => {
@@ -19,7 +19,7 @@ const createFilmPopup = (data) => {
     </label>`;
   }).join(``);
 
-  const smileImg = chosenSmile ? `<img src="${EMOTION_PICS[chosenSmile]}" width="55" height="55" alt="emoji-${chosenSmile}">` : ``;
+  const smileImg = chosenSmile ? `<img src="./images/emoji/${chosenSmile}.png" width="55" height="55" alt="emoji-${chosenSmile}">` : ``;
 
   const commentValue = userComment || ``;
 
@@ -136,6 +136,7 @@ export default class FilmPopup extends Smart {
     this._renderComments = renderCommentsCb;
     this._data = this._parseFilmTodata(film);
     this._isCommentFormDisabled = false;
+    this._isOnlineListening = false;
 
     this._crossClickHandler = this._crossClickHandler.bind(this);
     this._commentChangeHandler = this._commentChangeHandler.bind(this);
@@ -143,6 +144,7 @@ export default class FilmPopup extends Smart {
     this._watchlistButtonClickHandler = this._watchlistButtonClickHandler.bind(this);
     this._historyButtonClickHandler = this._historyButtonClickHandler.bind(this);
     this._favouritesButtonClickHandler = this._favouritesButtonClickHandler.bind(this);
+    this.shake = this.shake.bind(this);
 
     this._setHandlers();
   }
@@ -182,6 +184,14 @@ export default class FilmPopup extends Smart {
   }
 
   _commentChangeHandler(evt) {
+    if (evt.target.value.length && !this._isOnlineListening) {
+      this._isOnlineListening = true;
+      window.addEventListener(`offline`, this.shake);
+    }
+    if (evt.target.value.length === 0 && this._isOnlineListening) {
+      this._isOnlineListening = false;
+      window.removeEventListener(`offline`, this.shake);
+    }
     evt.preventDefault();
     this.updateData({userComment: evt.target.value}, true);
   }
@@ -196,17 +206,17 @@ export default class FilmPopup extends Smart {
   }
 
   _watchlistButtonClickHandler() {
-    this._cardUpdateHandler(CATEGORIES.WATCHLIST);
+    this._cardUpdateHandler(Category.WATCHLIST);
     this._data.isInWatchlist = !this._data.isInWatchlist;
   }
 
   _historyButtonClickHandler() {
-    this._cardUpdateHandler(CATEGORIES.HISTORY);
+    this._cardUpdateHandler(Category.HISTORY);
     this._data.isInHistory = !this._data.isInHistory;
   }
 
   _favouritesButtonClickHandler() {
-    this._cardUpdateHandler(CATEGORIES.FAVOURITES);
+    this._cardUpdateHandler(Category.FAVOURITES);
     this._data.isInFavourites = !this._data.isInFavourites;
   }
 
