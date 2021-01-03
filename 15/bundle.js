@@ -40007,34 +40007,28 @@ class Store {
 /*!**********************!*\
   !*** ./src/const.js ***!
   \**********************/
-/*! exports provided: EMOTIONS, EMOTION_PICS, SortType, CATEGORIES, UserAction, UpdateType, ModelMethod, UserRaiting, SiteState, StatsPeriod */
+/*! exports provided: EMOTIONS, SortType, Category, UserAction, UpdateType, ModelMethod, UserRaiting, SiteState, StatsPeriod, FilmCardContainer, RenderPosition */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EMOTIONS", function() { return EMOTIONS; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EMOTION_PICS", function() { return EMOTION_PICS; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SortType", function() { return SortType; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CATEGORIES", function() { return CATEGORIES; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Category", function() { return Category; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UserAction", function() { return UserAction; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UpdateType", function() { return UpdateType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ModelMethod", function() { return ModelMethod; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UserRaiting", function() { return UserRaiting; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SiteState", function() { return SiteState; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StatsPeriod", function() { return StatsPeriod; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FilmCardContainer", function() { return FilmCardContainer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RenderPosition", function() { return RenderPosition; });
 const EMOTIONS = [
   `smile`,
   `sleeping`,
   `puke`,
   `angry`
 ];
-
-const EMOTION_PICS = {
-  smile: `./images/emoji/smile.png`,
-  sleeping: `./images/emoji/sleeping.png`,
-  puke: `./images/emoji/puke.png`,
-  angry: `./images/emoji/angry.png`
-};
 
 const SortType = {
   DEFAULT: `default`,
@@ -40043,7 +40037,7 @@ const SortType = {
   COMMENTS: `comments`
 };
 
-const CATEGORIES = {
+const Category = {
   All: `all`,
   WATCHLIST: `watchlist`,
   HISTORY: `history`,
@@ -40092,6 +40086,16 @@ const StatsPeriod = {
   WEEK: `week`,
   MONTH: `month`,
   YEAR: `year`
+};
+
+const FilmCardContainer = {
+  RAITED: `raited`,
+  COMMENTED: `commented`
+};
+
+const RenderPosition = {
+  BEFOREEND: `beforeend`,
+  AFTERBEGIN: `afterbegin`
 };
 
 
@@ -40350,7 +40354,7 @@ __webpack_require__.r(__webpack_exports__);
 class FilterModel extends _observer__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor() {
     super();
-    this._filter = _const__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].All;
+    this._filter = _const__WEBPACK_IMPORTED_MODULE_1__["Category"].All;
     this._observers = {
       updateFilter: []
     };
@@ -40695,10 +40699,10 @@ class Catalog {
     const filmPresenter = new _film_card_presenter__WEBPACK_IMPORTED_MODULE_8__["default"](this._commentsModel, this._onViewAction, this._closeAllPopups, this._filterModel);
     filmPresenter.init(film, container);
     switch (block) {
-      case `raited`:
+      case _const_js__WEBPACK_IMPORTED_MODULE_9__["FilmCardContainer"].RAITED:
         this._filmCardPresenterGroups.raited[film.id] = filmPresenter;
         break;
-      case `commented`:
+      case _const_js__WEBPACK_IMPORTED_MODULE_9__["FilmCardContainer"].COMMENTED:
         this._filmCardPresenterGroups.commented[film.id] = filmPresenter;
         break;
       default:
@@ -40746,7 +40750,7 @@ class Catalog {
     }
     const topRaitedFilmsContainer = this._siteCatalog.getElement().querySelector(`.films-list--extra .films-list__container`);
     for (let i = 0; i < Math.min(this._FILMS_TOP_RAITED_CARDS_NUMBER, this._getFilms(_const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].RAITING).length); i++) {
-      this._renderCard(topRaitedFilmsContainer, this._getFilms(_const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].RAITING)[i], `raited`);
+      this._renderCard(topRaitedFilmsContainer, this._getFilms(_const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].RAITING)[i], _const_js__WEBPACK_IMPORTED_MODULE_9__["FilmCardContainer"].RAITED);
     }
   }
 
@@ -40756,7 +40760,7 @@ class Catalog {
     }
     const mostCommentedFilmsContainer = this._siteCatalog.getElement().querySelector(`.films-list--commented .films-list__container`);
     for (let i = 0; i < Math.min(this._FILMS_MOST_COMMENTED_CARDS_NUMBER, this._getFilms(_const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].COMMENTS).length); i++) {
-      this._renderCard(mostCommentedFilmsContainer, this._getFilms(_const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].COMMENTS)[i], `commented`);
+      this._renderCard(mostCommentedFilmsContainer, this._getFilms(_const_js__WEBPACK_IMPORTED_MODULE_9__["SortType"].COMMENTS)[i], _const_js__WEBPACK_IMPORTED_MODULE_9__["FilmCardContainer"].COMMENTED);
     }
   }
 
@@ -41090,7 +41094,7 @@ class CardPresenter {
   }
 
   _onCardWatchlistClick() {
-    const action = (this._filterModel.getFilter() !== _const_js__WEBPACK_IMPORTED_MODULE_3__["CATEGORIES"].All && this._film.isInWatchlist) ? _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY_WITH_RERENDER : _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY;
+    const action = (this._filterModel.getFilter() !== _const_js__WEBPACK_IMPORTED_MODULE_3__["Category"].All && this._film.isInWatchlist) ? _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY_WITH_RERENDER : _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY;
     this._filmChange(action, Object.assign(
         {},
         this._film,
@@ -41102,7 +41106,7 @@ class CardPresenter {
   }
 
   _onCardFavouritesClick() {
-    const action = (this._filterModel.getFilter() !== _const_js__WEBPACK_IMPORTED_MODULE_3__["CATEGORIES"].All && this._film.isFavourite) ? _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY_WITH_RERENDER : _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY;
+    const action = (this._filterModel.getFilter() !== _const_js__WEBPACK_IMPORTED_MODULE_3__["Category"].All && this._film.isFavourite) ? _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY_WITH_RERENDER : _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY;
     this._filmChange(action, Object.assign(
         {},
         this._film,
@@ -41114,26 +41118,27 @@ class CardPresenter {
   }
 
   _onCardToHistoryClick() {
-    const action = (this._filterModel.getFilter() !== _const_js__WEBPACK_IMPORTED_MODULE_3__["CATEGORIES"].All && this._film.isInHistory) ? _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY_WITH_RERENDER : _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY;
+    const action = (this._filterModel.getFilter() !== _const_js__WEBPACK_IMPORTED_MODULE_3__["Category"].All && this._film.isInHistory) ? _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY_WITH_RERENDER : _const_js__WEBPACK_IMPORTED_MODULE_3__["UserAction"].UPDATE_FILM_CATEGORY;
     this._filmChange(action, Object.assign(
         {},
         this._film,
         {
           isInHistory: !this._film.isInHistory,
-          isSynced: false
+          isSynced: false,
+          watchingDate: this._film.isInHistory ? this._film.watchingDate : new Date()
         }
     ));
   }
 
   cardUpdateHandler(category) {
     switch (category) {
-      case _const_js__WEBPACK_IMPORTED_MODULE_3__["CATEGORIES"].WATCHLIST:
+      case _const_js__WEBPACK_IMPORTED_MODULE_3__["Category"].WATCHLIST:
         this._onCardWatchlistClick();
         break;
-      case _const_js__WEBPACK_IMPORTED_MODULE_3__["CATEGORIES"].HISTORY:
+      case _const_js__WEBPACK_IMPORTED_MODULE_3__["Category"].HISTORY:
         this._onCardToHistoryClick();
         break;
-      case _const_js__WEBPACK_IMPORTED_MODULE_3__["CATEGORIES"].FAVOURITES:
+      case _const_js__WEBPACK_IMPORTED_MODULE_3__["Category"].FAVOURITES:
         this._onCardFavouritesClick();
         break;
     }
@@ -41236,7 +41241,7 @@ class Filters {
     this._filterModel = filterModel;
     this._changeSiteState = changeSiteStateCb;
     this._siteMenuView = null;
-    this._currentFilter = _const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].All;
+    this._currentFilter = _const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].All;
     this._isShowingFilms = true;
 
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -41262,7 +41267,7 @@ class Filters {
     this._siteMenuView.setStatsButtonClickHandler(this._onStatsButtonClick);
 
     if (!prevFiltersView) {
-      Object(_util__WEBPACK_IMPORTED_MODULE_2__["render"])(this.container, this._siteMenuView, `afterbegin`);
+      Object(_util__WEBPACK_IMPORTED_MODULE_2__["render"])(this.container, this._siteMenuView, _const_js__WEBPACK_IMPORTED_MODULE_1__["RenderPosition"].AFTERBEGIN);
       return;
     }
 
@@ -41436,7 +41441,7 @@ const createElement = (template) => {
   return newElement.firstChild;
 };
 
-const render = (container, element, place = `beforeend`) => {
+const render = (container, element, place = _const__WEBPACK_IMPORTED_MODULE_1__["RenderPosition"].BEFOREEND) => {
   if (container instanceof _view_abstract_view__WEBPACK_IMPORTED_MODULE_0__["default"]) {
     container = container.getElement();
   }
@@ -41444,10 +41449,10 @@ const render = (container, element, place = `beforeend`) => {
     element = element.getElement();
   }
   switch (place) {
-    case `beforeend`:
+    case _const__WEBPACK_IMPORTED_MODULE_1__["RenderPosition"].BEFOREEND:
       container.append(element);
       break;
-    case `afterbegin`:
+    case _const__WEBPACK_IMPORTED_MODULE_1__["RenderPosition"].AFTERBEGIN:
       container.prepend(element);
       break;
   }
@@ -41501,10 +41506,10 @@ const updateUserPropertyArray = (idArr, filmId) => {
 };
 
 const filter = {
-  [_const__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].All]: (films) => films,
-  [_const__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].WATCHLIST]: (films) => films.filter((film) => (film.isInWatchlist)),
-  [_const__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].HISTORY]: (films) => films.filter((film) => (film.isInHistory)),
-  [_const__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].FAVOURITES]: (films) => films.filter((film) => (film.isFavourite))
+  [_const__WEBPACK_IMPORTED_MODULE_1__["Category"].All]: (films) => films,
+  [_const__WEBPACK_IMPORTED_MODULE_1__["Category"].WATCHLIST]: (films) => films.filter((film) => (film.isInWatchlist)),
+  [_const__WEBPACK_IMPORTED_MODULE_1__["Category"].HISTORY]: (films) => films.filter((film) => (film.isInHistory)),
+  [_const__WEBPACK_IMPORTED_MODULE_1__["Category"].FAVOURITES]: (films) => films.filter((film) => (film.isFavourite))
 };
 
 const getDuration = (duration) => {
@@ -41837,7 +41842,7 @@ const createFilmPopup = (data) => {
     </label>`;
   }).join(``);
 
-  const smileImg = chosenSmile ? `<img src="${_const_js__WEBPACK_IMPORTED_MODULE_2__["EMOTION_PICS"][chosenSmile]}" width="55" height="55" alt="emoji-${chosenSmile}">` : ``;
+  const smileImg = chosenSmile ? `<img src="./images/emoji/${chosenSmile}.png" width="55" height="55" alt="emoji-${chosenSmile}">` : ``;
 
   const commentValue = userComment || ``;
 
@@ -42024,17 +42029,17 @@ class FilmPopup extends _smart_view__WEBPACK_IMPORTED_MODULE_0__["default"] {
   }
 
   _watchlistButtonClickHandler() {
-    this._cardUpdateHandler(_const_js__WEBPACK_IMPORTED_MODULE_2__["CATEGORIES"].WATCHLIST);
+    this._cardUpdateHandler(_const_js__WEBPACK_IMPORTED_MODULE_2__["Category"].WATCHLIST);
     this._data.isInWatchlist = !this._data.isInWatchlist;
   }
 
   _historyButtonClickHandler() {
-    this._cardUpdateHandler(_const_js__WEBPACK_IMPORTED_MODULE_2__["CATEGORIES"].HISTORY);
+    this._cardUpdateHandler(_const_js__WEBPACK_IMPORTED_MODULE_2__["Category"].HISTORY);
     this._data.isInHistory = !this._data.isInHistory;
   }
 
   _favouritesButtonClickHandler() {
-    this._cardUpdateHandler(_const_js__WEBPACK_IMPORTED_MODULE_2__["CATEGORIES"].FAVOURITES);
+    this._cardUpdateHandler(_const_js__WEBPACK_IMPORTED_MODULE_2__["Category"].FAVOURITES);
     this._data.isInFavourites = !this._data.isInFavourites;
   }
 
@@ -42328,10 +42333,10 @@ const createSiteMenu = (films, currentSort) => {
 
   return `<nav class="main-navigation">
   <div class="main-navigation__items">
-    <a href="#all" class="main-navigation__item${getActiveHtmlClass(_const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].All)}" data-filter-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].All}">All movies</a>
-    <a href="#watchlist" class="main-navigation__item${getActiveHtmlClass(_const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].WATCHLIST)}" data-filter-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].WATCHLIST}">Watchlist <span class="main-navigation__item-count">${inWatchlist}</span></a>
-    <a href="#history" class="main-navigation__item${getActiveHtmlClass(_const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].HISTORY)}" data-filter-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].HISTORY}">History <span class="main-navigation__item-count">${inHistory}</span></a>
-    <a href="#favorites" class="main-navigation__item${getActiveHtmlClass(_const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].FAVOURITES)}" data-filter-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["CATEGORIES"].FAVOURITES}">Favorites <span class="main-navigation__item-count">${favourites}</span></a>
+    <a href="#all" class="main-navigation__item${getActiveHtmlClass(_const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].All)}" data-filter-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].All}">All movies</a>
+    <a href="#watchlist" class="main-navigation__item${getActiveHtmlClass(_const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].WATCHLIST)}" data-filter-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].WATCHLIST}">Watchlist <span class="main-navigation__item-count">${inWatchlist}</span></a>
+    <a href="#history" class="main-navigation__item${getActiveHtmlClass(_const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].HISTORY)}" data-filter-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].HISTORY}">History <span class="main-navigation__item-count">${inHistory}</span></a>
+    <a href="#favorites" class="main-navigation__item${getActiveHtmlClass(_const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].FAVOURITES)}" data-filter-type="${_const_js__WEBPACK_IMPORTED_MODULE_1__["Category"].FAVOURITES}">Favorites <span class="main-navigation__item-count">${favourites}</span></a>
   </div>
   <a href="#stats" class="main-navigation__additional">Stats</a>
 </nav>`;
