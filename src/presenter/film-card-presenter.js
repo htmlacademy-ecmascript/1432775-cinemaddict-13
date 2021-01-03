@@ -1,7 +1,7 @@
 import {render, replace, remove, isKeyPressed} from '../util.js';
 import FilmCardView from '../view/film-card';
 import FilmPopupView from '../view/film-popup';
-import {CATEGORIES, UserAction, ModelMethod} from "../const.js";
+import {Category, UserAction, ModelMethod} from "../const.js";
 import CommentPresenter from './comment-presenter';
 
 export default class CardPresenter {
@@ -203,7 +203,7 @@ export default class CardPresenter {
   }
 
   _onCardWatchlistClick() {
-    const action = (this._filterModel.getFilter() !== CATEGORIES.All && this._film.isInWatchlist) ? UserAction.UPDATE_FILM_CATEGORY_WITH_RERENDER : UserAction.UPDATE_FILM_CATEGORY;
+    const action = (this._filterModel.getFilter() !== Category.All && this._film.isInWatchlist) ? UserAction.UPDATE_FILM_CATEGORY_WITH_RERENDER : UserAction.UPDATE_FILM_CATEGORY;
     this._filmChange(action, Object.assign(
         {},
         this._film,
@@ -215,7 +215,7 @@ export default class CardPresenter {
   }
 
   _onCardFavouritesClick() {
-    const action = (this._filterModel.getFilter() !== CATEGORIES.All && this._film.isFavourite) ? UserAction.UPDATE_FILM_CATEGORY_WITH_RERENDER : UserAction.UPDATE_FILM_CATEGORY;
+    const action = (this._filterModel.getFilter() !== Category.All && this._film.isFavourite) ? UserAction.UPDATE_FILM_CATEGORY_WITH_RERENDER : UserAction.UPDATE_FILM_CATEGORY;
     this._filmChange(action, Object.assign(
         {},
         this._film,
@@ -227,26 +227,27 @@ export default class CardPresenter {
   }
 
   _onCardToHistoryClick() {
-    const action = (this._filterModel.getFilter() !== CATEGORIES.All && this._film.isInHistory) ? UserAction.UPDATE_FILM_CATEGORY_WITH_RERENDER : UserAction.UPDATE_FILM_CATEGORY;
+    const action = (this._filterModel.getFilter() !== Category.All && this._film.isInHistory) ? UserAction.UPDATE_FILM_CATEGORY_WITH_RERENDER : UserAction.UPDATE_FILM_CATEGORY;
     this._filmChange(action, Object.assign(
         {},
         this._film,
         {
           isInHistory: !this._film.isInHistory,
-          isSynced: false
+          isSynced: false,
+          watchingDate: this._film.isInHistory ? this._film.watchingDate : new Date()
         }
     ));
   }
 
   cardUpdateHandler(category) {
     switch (category) {
-      case CATEGORIES.WATCHLIST:
+      case Category.WATCHLIST:
         this._onCardWatchlistClick();
         break;
-      case CATEGORIES.HISTORY:
+      case Category.HISTORY:
         this._onCardToHistoryClick();
         break;
-      case CATEGORIES.FAVOURITES:
+      case Category.FAVOURITES:
         this._onCardFavouritesClick();
         break;
     }

@@ -1,5 +1,5 @@
 import AbstractView from './abstract-view';
-import {CATEGORIES} from "../const.js";
+import {Category} from "../const.js";
 
 const createSiteMenu = (films, currentSort) => {
   let inWatchlist = 0;
@@ -23,10 +23,10 @@ const createSiteMenu = (films, currentSort) => {
 
   return `<nav class="main-navigation">
   <div class="main-navigation__items">
-    <a href="#all" class="main-navigation__item${getActiveHtmlClass(CATEGORIES.All)}" data-filter-type="${CATEGORIES.All}">All movies</a>
-    <a href="#watchlist" class="main-navigation__item${getActiveHtmlClass(CATEGORIES.WATCHLIST)}" data-filter-type="${CATEGORIES.WATCHLIST}">Watchlist <span class="main-navigation__item-count">${inWatchlist}</span></a>
-    <a href="#history" class="main-navigation__item${getActiveHtmlClass(CATEGORIES.HISTORY)}" data-filter-type="${CATEGORIES.HISTORY}">History <span class="main-navigation__item-count">${inHistory}</span></a>
-    <a href="#favorites" class="main-navigation__item${getActiveHtmlClass(CATEGORIES.FAVOURITES)}" data-filter-type="${CATEGORIES.FAVOURITES}">Favorites <span class="main-navigation__item-count">${favourites}</span></a>
+    <a href="#all" class="main-navigation__item${getActiveHtmlClass(Category.All)}" data-filter-type="${Category.All}">All movies</a>
+    <a href="#watchlist" class="main-navigation__item${getActiveHtmlClass(Category.WATCHLIST)}" data-filter-type="${Category.WATCHLIST}">Watchlist <span class="main-navigation__item-count">${inWatchlist}</span></a>
+    <a href="#history" class="main-navigation__item${getActiveHtmlClass(Category.HISTORY)}" data-filter-type="${Category.HISTORY}">History <span class="main-navigation__item-count">${inHistory}</span></a>
+    <a href="#favorites" class="main-navigation__item${getActiveHtmlClass(Category.FAVOURITES)}" data-filter-type="${Category.FAVOURITES}">Favorites <span class="main-navigation__item-count">${favourites}</span></a>
   </div>
   <a href="#stats" class="main-navigation__additional">Stats</a>
 </nav>`;

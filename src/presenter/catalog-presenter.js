@@ -7,7 +7,7 @@ import LoadingView from '../view/loading';
 import NoFilmsView from '../view/no-films';
 import {render, remove, filter} from '../util.js';
 import FilmCardPresenter from './film-card-presenter';
-import {SortType, UserAction, ModelMethod} from "../const.js";
+import {SortType, UserAction, ModelMethod, FilmCardContainer} from "../const.js";
 
 export default class Catalog {
   constructor(filmsmodel, filterModel, commentsModel) {
@@ -207,10 +207,10 @@ export default class Catalog {
     const filmPresenter = new FilmCardPresenter(this._commentsModel, this._onViewAction, this._closeAllPopups, this._filterModel);
     filmPresenter.init(film, container);
     switch (block) {
-      case `raited`:
+      case FilmCardContainer.RAITED:
         this._filmCardPresenterGroups.raited[film.id] = filmPresenter;
         break;
-      case `commented`:
+      case FilmCardContainer.COMMENTED:
         this._filmCardPresenterGroups.commented[film.id] = filmPresenter;
         break;
       default:
@@ -258,7 +258,7 @@ export default class Catalog {
     }
     const topRaitedFilmsContainer = this._siteCatalog.getElement().querySelector(`.films-list--extra .films-list__container`);
     for (let i = 0; i < Math.min(this._FILMS_TOP_RAITED_CARDS_NUMBER, this._getFilms(SortType.RAITING).length); i++) {
-      this._renderCard(topRaitedFilmsContainer, this._getFilms(SortType.RAITING)[i], `raited`);
+      this._renderCard(topRaitedFilmsContainer, this._getFilms(SortType.RAITING)[i], FilmCardContainer.RAITED);
     }
   }
 
@@ -268,7 +268,7 @@ export default class Catalog {
     }
     const mostCommentedFilmsContainer = this._siteCatalog.getElement().querySelector(`.films-list--commented .films-list__container`);
     for (let i = 0; i < Math.min(this._FILMS_MOST_COMMENTED_CARDS_NUMBER, this._getFilms(SortType.COMMENTS).length); i++) {
-      this._renderCard(mostCommentedFilmsContainer, this._getFilms(SortType.COMMENTS)[i], `commented`);
+      this._renderCard(mostCommentedFilmsContainer, this._getFilms(SortType.COMMENTS)[i], FilmCardContainer.COMMENTED);
     }
   }
 

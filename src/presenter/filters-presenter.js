@@ -1,5 +1,5 @@
 import SiteMenuView from '../view/site-menu';
-import {UserAction, ModelMethod, CATEGORIES, SiteState} from "../const.js";
+import {UserAction, ModelMethod, Category, SiteState, RenderPosition} from "../const.js";
 import {remove, render, replace} from '../util';
 
 export default class Filters {
@@ -8,7 +8,7 @@ export default class Filters {
     this._filterModel = filterModel;
     this._changeSiteState = changeSiteStateCb;
     this._siteMenuView = null;
-    this._currentFilter = CATEGORIES.All;
+    this._currentFilter = Category.All;
     this._isShowingFilms = true;
 
     this._onFilterChange = this._onFilterChange.bind(this);
@@ -34,7 +34,7 @@ export default class Filters {
     this._siteMenuView.setStatsButtonClickHandler(this._onStatsButtonClick);
 
     if (!prevFiltersView) {
-      render(this.container, this._siteMenuView, `afterbegin`);
+      render(this.container, this._siteMenuView, RenderPosition.AFTERBEGIN);
       return;
     }
 
