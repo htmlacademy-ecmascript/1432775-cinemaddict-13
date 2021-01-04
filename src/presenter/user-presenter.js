@@ -27,13 +27,7 @@ export default class UserPresenter {
   }
 
   _getWatchedFilmsNumber(films) {
-    let watched = 0;
-    films.forEach((film) => {
-      if (film.isInHistory) {
-        watched++;
-      }
-    });
-    return watched;
+    return films.reduce((acc, currentFilm) => acc + currentFilm.isInHistory, 0);
   }
 
   _getUserRaiting(watchedFilms) {

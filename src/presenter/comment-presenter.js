@@ -20,12 +20,8 @@ export default class Comment {
   }
 
   init(container) {
-
     this._commentView = new CommentView(this._comment);
-
     this._commentView.setDeleteButtonClickHandler(this._deleteComment);
-
-
     render(container, this._commentView);
   }
 

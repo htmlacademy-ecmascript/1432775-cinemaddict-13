@@ -120,7 +120,7 @@ export default class Api {
       description: film.film_info.description,
       isInWatchlist: film.user_details.watchlist,
       isInHistory: film.user_details.already_watched,
-      watchingDate: film.user_details.watching_date,
+      watchingDate: new Date(film.user_details.watching_date),
       isFavourite: film.user_details.favorite,
       isSynced: true
     };
@@ -153,7 +153,7 @@ export default class Api {
           "user_details": {
             "watchlist": film.isInWatchlist,
             "already_watched": film.isInHistory,
-            "watching_date": film.watchingDate,
+            "watching_date": film.watchingDate.toISOString(),
             "favorite": film.isFavourite,
           }
         };
