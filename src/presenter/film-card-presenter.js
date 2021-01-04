@@ -5,13 +5,14 @@ import {Category, UserAction, ModelMethod} from "../const.js";
 import CommentPresenter from './comment-presenter';
 
 export default class CardPresenter {
-  constructor(commentsModel, filmChangeCb, closePopupsCb, filterModel) {
+  constructor(commentsModel, filmChangeCb, closePopupsCb, filterModel, updateMostCommentedBlockCb) {
     this._commentsModel = commentsModel;
     this._filterModel = filterModel;
 
     this._commentPresenters = {};
 
     this._closePopups = closePopupsCb;
+    this._updateMostCommentedBlock = updateMostCommentedBlockCb;
 
     this._card = null;
     this._filmChange = filmChangeCb;
@@ -101,6 +102,7 @@ export default class CardPresenter {
             comments: Object.keys(this._commentPresenters)
           }
       ));
+      this._updateMostCommentedBlock(this._film.id);
     }
   }
 
@@ -150,6 +152,7 @@ export default class CardPresenter {
       this._popup.scrollToY();
 
       this._filmChange(UserAction.REPLACE_FILM, film);
+      this._updateMostCommentedBlock(this._film.id);
     }
   }
 

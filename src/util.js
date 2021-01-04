@@ -88,11 +88,7 @@ export const filter = {
 export const getDuration = (duration) => {
   const hours = duration / 60;
   const minutes = duration % 60;
-  if (hours < 1) {
-    return `${minutes}m`;
-  } else {
-    return `${Math.floor(hours)}h ${minutes}m`;
-  }
+  return (hours < 1) ? `${minutes}m` : `${Math.floor(hours)}h ${minutes}m`;
 };
 
 export const isOnline = () => {
