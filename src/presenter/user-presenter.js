@@ -1,6 +1,6 @@
 import {render, remove, replace} from '../util.js';
 import UserIconView from '../view/user-icon';
-import {ModelMethod, UserRaiting} from '../const';
+import {ModelMethod} from '../const';
 
 export default class UserPresenter {
   constructor(userModel) {
@@ -28,16 +28,6 @@ export default class UserPresenter {
 
   _getWatchedFilmsNumber(films) {
     return films.reduce((acc, currentFilm) => acc + currentFilm.isInHistory, 0);
-  }
-
-  _getUserRaiting(watchedFilms) {
-    if (watchedFilms > 20) {
-      return UserRaiting.MOVIE_BUFF;
-    } else if (watchedFilms > 10 && watchedFilms <= 20) {
-      return UserRaiting.FAN;
-    } else {
-      return UserRaiting.NOVICE;
-    }
   }
 
   _onUserRaitingChange() {

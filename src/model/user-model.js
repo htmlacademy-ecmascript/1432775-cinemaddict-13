@@ -42,8 +42,10 @@ export default class UserModel extends Observer {
       return UserRaiting.MOVIE_BUFF;
     } else if (watchedFilms > 10 && watchedFilms <= 20) {
       return UserRaiting.FAN;
-    } else {
+    } else if (watchedFilms > 0 && watchedFilms <= 10) {
       return UserRaiting.NOVICE;
+    } else {
+      return null;
     }
   }
 }

@@ -48,6 +48,7 @@ export default class Catalog {
     this._onfilmUpdate = this._onfilmUpdate.bind(this);
     this._onFilterUpdate = this._onFilterUpdate.bind(this);
     this._onFilmsLoad = this._onFilmsLoad.bind(this);
+    this.updateMostCommentedBlock = this.updateMostCommentedBlock.bind(this);
   }
 
   init(container = this._container) {
@@ -109,6 +110,14 @@ export default class Catalog {
         });
         break;
     }
+  }
+
+  updateMostCommentedBlock(filmId) {
+    if (!this._getFilms(SortType.COMMENTS).slice(0, this._FILMS_MOST_COMMENTED_CARDS_NUMBER).some((film) => film.id === filmId)) {
+      return;
+    }
+    remove(this._mostCommentedContainerView);
+    this._renderMostCommentedFilms();
   }
 
   _onFilmsLoad() {
@@ -195,7 +204,7 @@ export default class Catalog {
   }
 
   _renderCard(container, film, block) {
-    const filmPresenter = new FilmCardPresenter(this._commentsModel, this._onViewAction, this._closeAllPopups, this._filterModel);
+    const filmPresenter = new FilmCardPresenter(this._commentsModel, this._onViewAction, this._closeAllPopups, this._filterModel, this.updateMostCommentedBlock);
     filmPresenter.init(film, container);
     switch (block) {
       case FilmCardContainer.RAITED:

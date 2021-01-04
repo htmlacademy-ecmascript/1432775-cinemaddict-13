@@ -75,12 +75,7 @@ const renderChart = (statisticCtx) => {
 
 const genres = new Map();
 const createStats = (data) => {
-  let chosenPeriodTime;
-  if (data.period === StatsPeriod.ALL) {
-    chosenPeriodTime = -Infinity;
-  } else {
-    chosenPeriodTime = dayjs().subtract(1, `${data.period}`);
-  }
+  const chosenPeriodTime = (data.period === StatsPeriod.ALL) ? -Infinity : dayjs().subtract(1, `${data.period}`);
 
   let filmsWatched = 0;
   let totalMinutesDuration = 0;
