@@ -2,7 +2,7 @@ import {render, replace, remove, isKeyPressed} from '../util.js';
 import FilmCardView from '../view/film-card';
 import FilmPopupView from '../view/film-popup';
 import {Category, UserAction, ModelMethod} from "../const.js";
-import CommentPresenter from './comment-presenter';
+import CommentPresenter from './comment';
 
 export default class CardPresenter {
   constructor(commentsModel, filmChangeCb, closePopupsCb, filterModel, updateMostCommentedBlockCb) {
@@ -30,7 +30,7 @@ export default class CardPresenter {
     this._onCardWatchlistClick = this._onCardWatchlistClick.bind(this);
     this._onCardToHistoryClick = this._onCardToHistoryClick.bind(this);
     this._onCardFavouritesClick = this._onCardFavouritesClick.bind(this);
-    this.cardUpdateHandler = this.cardUpdateHandler.bind(this);
+    this.onCardUpdate = this.onCardUpdate.bind(this);
     this.onCommentDelete = this.onCommentDelete.bind(this);
     this.onViewAction = this.onViewAction.bind(this);
     this._onCommentAdd = this._onCommentAdd.bind(this);
@@ -108,7 +108,7 @@ export default class CardPresenter {
 
   _onCommentDeleteError(commentId) {
     this._commentPresenters[commentId].changeDeleteButtonState();
-    this._commentPresenters[commentId].shake();
+    this._commentPresenters[commentId].onUserCommentError();
   }
 
   _onCommentAdd(evt) {
@@ -129,7 +129,7 @@ export default class CardPresenter {
 
   _onCommentAddError() {
     this._popup.disableCommentInputs();
-    this._popup.shake();
+    this._popup.onCommentFormError();
   }
 
   addComment(response) {
@@ -194,7 +194,7 @@ export default class CardPresenter {
   _openPopup(evt) {
     evt.preventDefault();
     this._closePopups();
-    this._popup = new FilmPopupView(this._film, this.cardUpdateHandler, this._renderCommentsToPopup);
+    this._popup = new FilmPopupView(this._film, this.onCardUpdate, this._renderCommentsToPopup);
 
     this._renderCommentsToPopup();
 
@@ -242,7 +242,7 @@ export default class CardPresenter {
     ));
   }
 
-  cardUpdateHandler(category) {
+  onCardUpdate(category) {
     switch (category) {
       case Category.WATCHLIST:
         this._onCardWatchlistClick();

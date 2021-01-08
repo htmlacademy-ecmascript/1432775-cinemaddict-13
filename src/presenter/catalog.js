@@ -6,7 +6,7 @@ import MostCommentedContainerView from '../view/most-commented-container';
 import LoadingView from '../view/loading';
 import NoFilmsView from '../view/no-films';
 import {render, remove, filter} from '../util.js';
-import FilmCardPresenter from './film-card-presenter';
+import FilmCardPresenter from './card-presenter';
 import {SortType, UserAction, ModelMethod, FilmCardContainer} from "../const.js";
 
 export default class Catalog {

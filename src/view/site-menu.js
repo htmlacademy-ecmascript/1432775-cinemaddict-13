@@ -35,15 +35,15 @@ export default class SiteMenu extends AbstractView {
     this._films = films;
     this._currentFilter = currentFilter;
 
-    this._FilterChangeHandler = this._FilterChangeHandler.bind(this);
-    this._statsButtonClickHandler = this._statsButtonClickHandler.bind(this);
+    this._onFilterChange = this._onFilterChange.bind(this);
+    this.__onStatsButtonClick = this.__onStatsButtonClick.bind(this);
   }
 
   getTemplate() {
     return createSiteMenu(this._films, this._currentFilter);
   }
 
-  _FilterChangeHandler(evt) {
+  _onFilterChange(evt) {
     if (evt.target.tagName !== `A`) {
       return;
     }
@@ -51,18 +51,18 @@ export default class SiteMenu extends AbstractView {
     this._callback.filterTypeChange(evt.target.dataset.filterType);
   }
 
-  _statsButtonClickHandler(evt) {
+  __onStatsButtonClick(evt) {
     evt.preventDefault();
     this._callback.siteStateChange(evt);
   }
 
   setFilterChangeHandler(cb) {
     this._callback.filterTypeChange = cb;
-    this.getElement().querySelector(`.main-navigation__items`).addEventListener(`click`, this._FilterChangeHandler);
+    this.getElement().querySelector(`.main-navigation__items`).addEventListener(`click`, this._onFilterChange);
   }
 
   setStatsButtonClickHandler(cb) {
     this._callback.siteStateChange = cb;
-    this.getElement().querySelector(`.main-navigation__additional`).addEventListener(`click`, this._statsButtonClickHandler);
+    this.getElement().querySelector(`.main-navigation__additional`).addEventListener(`click`, this.__onStatsButtonClick);
   }
 }
